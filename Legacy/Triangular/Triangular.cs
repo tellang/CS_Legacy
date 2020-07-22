@@ -83,6 +83,19 @@ namespace Triangular
             this.stat = "None";
         }
 
+        public BaseFrame (ISequence seq)
+        {
+            this.xPos = seq.xPos;
+            this.yPos = seq.yPos;
+            this.inWidth = seq.inWidth;
+            this.inHeight = seq.inHeight;
+            this.outHeight = inHeight + 2;
+            this.outWidth = 2*(2+inWidth);
+            this.term = term;
+            nextCardXPos = outWidth + term;
+            this.stat = "None";
+        }
+
         public int xPos { get; set; }
         public int yPos { get; set; }
         public int term {get; set;}
@@ -94,5 +107,74 @@ namespace Triangular
         public string stat {get; set;}
         public int nextCardXPos { get; set; }
 
+        public int this[int nth] {get {return xPos + nextCardXPos * nth;}}
+
+        public virtual void Frame (int xPos, int yPos){
+            Console.SetCursorPosition(xPos, yPos);
+            Console.Write(" ┏ ");
+            for(int i = 0; i < inWidth; i++)
+                Console.Write("━ ");
+            Console.Write("┓ ");
+
+            for(int j = 1; j <=inHeight; j++)
+            {
+                Console.SetCursorPosition(xPos, yPos);
+                Console.Write("┃ ");
+                for(int k = 1; k <= inWidth; k++)
+                    Console.Write(" ");
+
+                Console.Write("┃ ");
+            }
+            Console.SetCursorPosition(xPos, yPos + inHeight + 1);
+            Console.Write("┗");
+            for(int m = 1; m <=inWidth; m++)
+                Console.Write("━ ");
+            Console.Write("┛ ");
+        }
+
+        public virtual void CleanFrame(int xPos, int yPos)
+        {
+            Console.SetCursorPosition(xPos, yPos);
+            Console.Write(" ┏ ");
+            for(int i = 0; i < inWidth; i++)
+                Console.Write("━ ");
+            Console.Write("┓ ");
+            
+            for(int j = 1; j <=inHeight; j++)
+            {
+                Console.SetCursorPosition(xPos, yPos + j);
+                Console.Write("┃ ");
+                Console.SetCursorPosition(xPos + (inWidth + 1)*2, yPos + j);
+                Console.Write("┃ ");
+            }
+            Console.SetCursorPosition(xPos, yPos + inHeight + 1);
+            Console.Write("┗");
+            for(int m = 1; m <=inWidth; m++)
+                Console.Write("━ ");
+            Console.Write("┛ ");
+        }
+
+        public void Frame (int xPos, int yPos, int num)
+        {
+            for(int i = 0; i < num; i++)
+                Frame(xPos + nextCardXPos * num, yPos);
+        }
+
+        public virtual void Frame (int nth){
+            Frame(xPos + nextCardXPos * nth, yPos);
+        }
+
+        public virtual void CleanFrame ( int nth){
+            CleanFrame(xPos + nextCardXPos * nth, yPos);
+        }
+
+        public virtual void Frame(){
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Frame(xPos, yPos);
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
     }
+    
 }
