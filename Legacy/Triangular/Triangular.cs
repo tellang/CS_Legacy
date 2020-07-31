@@ -48,7 +48,6 @@ namespace Triangular
         public FrontFrame source { get; set; }
         public void SetCursor(ConsoleKeyInfo button);
     }
-
     struct CardInfo : IPosition, IJob
     {
         public int xPos { get; set; }
@@ -325,6 +324,59 @@ namespace Triangular
             for(int i = 0; i < info[nth].lives; i++)
                 Console.Write("♡");
             Effect.SetColor(fore: fc, Back: bc);
+        }
+    }
+    class EmptyFrame : BaseFrame
+    {
+        public EmptyFrame (int xPos, int yPos, int width, int height, int term):base (xPos, yPos, width, height, term)
+        {
+            stat = "Empty";
+        }
+
+        public EmptyFrame(ISequence seq):base(seq)
+        {
+            stat = "Empty";
+        }
+
+        public override void Frame(int xPos, int yPos)
+        {
+            for (int i = 0; i < outHeight; i++)
+            {
+                Console.SetCursorPosition(xPos, yPos + i);
+                for (int j = 0; j < outWidth; j++)
+                {
+                    Console.Write(" ")
+                }
+            }
+        }
+    }
+
+    class CursorFrame:BaseFrame
+    {
+        public CursorFrame (ISequence seq) : base(seq)
+        {
+
+        }
+        public override void Frame(int xPos, int yPos)
+        {
+            Effect.SetColor(fore: ConsoleColor.Yellow);
+            int xCur, yCur;
+            xCur = xPos -2;
+            yCur = yPos - 1;
+            Console.SetCursorPosition(xCur, yCur);
+            Console.Write(" ┏ ");
+            Console.SetCursorPosition(xCur + outWidth + 2, yCur);
+            Console.Write("┓ ");
+            Console.SetCursorPosition(xCur, yCur + outHeight + 1);
+            Console.Write("┗");
+            Console.SetCursorPosition(xCur + outWidth + 2, yCur + outHeight + 1);
+            Console.Write("┛ ");
+            Effect.DefaultColor();
+        }
+
+        public override void Frame(int nth)
+        {
+            Frame(xPos + nextCardXPos * nth, yPos);
         }
     }
 }
