@@ -321,15 +321,15 @@ namespace Triangular
 
         public void Lives(int xPos, int yPos, int nth)
         {
-            ConsoleColor bc, fc;
-            bc = Console.BackgroundColor;
-            fc = Console.ForegroundColor;
+            ConsoleColor backColor, foreColor;
+            backColor = Console.BackgroundColor;
+            foreColor = Console.ForegroundColor;
 
-            Effect.SetColor(fore: ConsoleColor.Red, Back: bc);
+            Effect.SetColor(fore: ConsoleColor.Red, Back: backColor);
             Console.SetCursorPosition(xPos + 2, yPos + inHeight);
             for (int i = 0; i < info[nth].lives; i++)
                 Console.Write("♡");
-            Effect.SetColor(fore: fc, Back: bc);
+            Effect.SetColor(fore: foreColor, Back: backColor);
         }
     }
     class EmptyFrame : BaseFrame
@@ -607,5 +607,154 @@ namespace Triangular
         }
     }
 
-    
+    class MenuFrame : Cursor, ICusor
+    {
+        public MenuFrame (FrontFrame source)
+        {
+            this.source = source;
+            this.cur = new CursorFrame(source);
+            this.dCur = new DeleteCursor(source);
+        }
+
+        public FrontFrame source { get; set; }
+        public CursorFrame cur { get; set; }
+        public DeleteCursor dCur  { get; set; }
+        public int index { get; set; }
+        public void SetCursor(ConsoleKeyInfo button)
+        {
+            cur.Frame(index);
+            switch (button.Key)
+            {
+                case ConsoleKey.LeftArrow:
+                    if(index > 0)
+                    {
+                        dCur.Frame(index--);
+                        cur.Frame(index);
+                    }break;
+                case ConsoleKey.RightArrow:
+                    if(glcOpert < 0)
+                    {
+                        if(index < source.info.Length - 2)
+                        {
+                            dCur.Frame(index++);
+                            cur.Frame(index);
+                        }
+                    }
+                    else
+                    {
+                        if(index < source.info.Length - 1)
+                        {
+                            dCur.Frame(index++);
+                            cur.Frame(index);
+                        }
+                    }
+                    break;
+                case ConsoleKey.Enter:
+                    switch(index)
+                    {
+                        case 0:
+                            cM = CursorMode.User;
+                            dCur.Frame(index);
+                            break;
+                        case 1:
+                            cM = CursorMode.Battle;
+                            dCur.Frame(index);
+                            break;
+                        case 2:
+                            if(unGlanced)
+                            {
+                                cM = CursorMode.GlcMu;
+                                dCur.Frame(index);
+                                index = 0;
+                            }
+                            else
+                            {
+                                cM = CursorMode.Opp;
+                                dCur.Frame(index);
+                                index =0;
+                            }break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ConsoleKey.Escape:
+                    cM = CursorMode.Exit;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    class Effect
+    {
+        public static void SetColor(ConsoleColor back = ConsoleColor.Black, ConsoleColor fore = ConsoleColor.Gray)
+        {
+            Console.BackgroundColor=back;
+            Console.ForegroundColor=fore;
+        }
+        public static void DefaultColor()
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+        public static void ShadeColor()
+        {
+            Console.ForegroundColor=ConsoleColor.DarkGray;
+        }
+        public static void OppositeColor()
+        {
+            Console.BackgroundColor= ConsoleColor.Gray;
+            Console.ForegroundColor=ConsoleColor.Black;
+        }
+        public static void Blink (BackFrame frame, int nth, int delay, ConsoleColor f, ConsoleColor b = ConsoleColor.Black)
+        {
+            ConsoleColor backColor, foreColor;
+            backColor = Console.BackgroundColor;
+            foreColor = Console.ForegroundColor;
+
+            SetColor(back: b, fore: f);
+            frame.Frame(nth);
+            Thread.Sleep(delay);
+            SetColor(back: backColor, fore: foreColor);
+            frame.Frame(nth);
+        }
+
+        public static void Blink (BackFrame frame, int nth, int delay, ConsoleColor f)
+        {
+            ConsoleColor backColor, foreColor;
+            backColor = Console.BackgroundColor;
+            foreColor = Console.ForegroundColor;
+
+            SetColor(back: backColor, fore: f);
+            frame.Frame(nth);
+            Thread.Sleep(delay);
+            SetColor(back: backColor, fore: foreColor);
+            //frame.Frame(nth);
+        }
+
+        public static void Blink (BackFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
+        {
+            ConsoleColor backColor, foreColor;
+            backColor = Console.BackgroundColor;
+            foreColor = Console.ForegroundColor;
+
+            SetColor(back: b, fore: f);
+            frame.FrameLabel(nth, label);
+            Thread.Sleep(delay);
+            SetColor(back: backColor, fore: foreColor);
+            frame.Frame(nth);
+        }
+
+        public static void Blink (BackFrame frame, int nth, int delay, ConsoleColor foreStartColor, ConsoleColor backStartColor, 
+        ConsoleColor foreLastColor, ConsoleColor backLastColor)
+        {
+            SetColor(back: backStartColor, fore: foreStartColor);
+            frame.Frame(nth);
+            Thread.Sleep(delay);
+            SetColor(back: backLastColor, fore: foreLastColor);
+            frame.CleanFrame(nth);
+        }
+    }
+
 }
