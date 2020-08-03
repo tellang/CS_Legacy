@@ -408,22 +408,22 @@ namespace Triangular
 
     class MapCursor : IButton
     {
-        public MapCursor (params MapInfo[] maps)
+        public MapCursor(params MapInfo[] maps)
         {
-            if(this.maps.Length >= maps.Length)
+            if (this.maps.Length >= maps.Length)
                 Array.Resize<MapInfo>(ref this.maps, maps.Length);
             for (int i = 0; i < maps.Length; i++)
-                this.maps[i] = maps[i];   
+                this.maps[i] = maps[i];
         }
-        public ConsoleKeyInfo button {get; set;}
-        public void SetButton () {button = Console.ReadKey(true);}
+        public ConsoleKeyInfo button { get; set; }
+        public void SetButton() { button = Console.ReadKey(true); }
         public MapInfo[] map = new MapInfo[4];
-        public void Move(){}
+        public void Move() { }
     }
 
     class Cursor : IButton
     {
-        public Cursor (params ICusor[] frame)
+        public Cursor(params ICusor[] frame)
         {
             if (this.frame.Length >= frame.Length)
                 Array.Resize<ICusor>(ref this.frame, frame.Length);
@@ -431,15 +431,15 @@ namespace Triangular
                 this.frame[i] = frame[i];
         }
 
-        public enum CursorMode {Menu, User, Opp, GlcMu, Battle, Map, Keep, Exit}
+        public enum CursorMode { Menu, User, Opp, GlanceMenu, Battle, Map, Keep, Exit }
         public static int glcOpert { get; set; }
         public static int oLife { get; set; }
         public static int uLife { get; set; }
-        public static bool[] unfilpped = new bool[] {true, true, true};
-        public static CursorMode cM {get; set;}
+        public static bool[] unfilpped = new bool[] { true, true, true };
+        public static CursorMode cM { get; set; }
         public static bool unGlanced { get; set; }
-        public ConsoleKeyInfo button {get; set;}
-        public void SetButton () { button = Console.ReadKey(true);}
+        public ConsoleKeyInfo button { get; set; }
+        public void SetButton() { button = Console.ReadKey(true); }
         public ICusor[] frame = new ICusor[4];
         public BaseFrame bmu;
 
@@ -453,38 +453,38 @@ namespace Triangular
                     Console.SetCursorPosition(0, 0);
                     switch (cM)
                     {
-                    case CursorMode.User:
-                        frame[(int)CursorMode.User].cur.Frame(0);
-                        break;
-                    case CursorMode.GlcMu:
-                        frame[(int)CursorMode.GlcMu].source.Frame();
-                        Effect.OppositeColor();
-                        frame[(int)CursorMode.GlcMu].source.FrameLabel(0);
-                        Effect.DefaultColor();
-                        break;
-                    case CursorMode.Opp:
-                        Console.SetCursorPosition(frame[(int)CursorMode.Opp].source.xPos+
-                        (frame[(int)CursorMode.Opp].source.term + 
-                        frame[(int)CursorMode.Opp].source.outWidth)*3/2 - 12,
-                        frame[(int)CursorMode.Opp].source.info[0].yPos -2);
-                        Console.Write("Glance Oppertunity: {0}", glcOpert + 1);
-                        frame[(int)CursorMode.Opp].cur.Frame(0);
-                        break;
-                    case CursorMode.Battle:
-                        Judgement.Battle(frame[(int)CursorMode.User].source,
-                        frame[(int)CursorMode.Opp].source, ref unfilpped);
-                        cM = CursorMode.Menu;
-                        frame[(int)CursorMode.Menu].cur.Frame(frame[(int)CursorMode.Menu].index);
-                        break;
+                        case CursorMode.User:
+                            frame[(int)CursorMode.User].cur.Frame(0);
+                            break;
+                        case CursorMode.GlanceMenu:
+                            frame[(int)CursorMode.GlanceMenu].source.Frame();
+                            Effect.OppositeColor();
+                            frame[(int)CursorMode.GlanceMenu].source.FrameLabel(0);
+                            Effect.DefaultColor();
+                            break;
+                        case CursorMode.Opp:
+                            Console.SetCursorPosition(frame[(int)CursorMode.Opp].source.xPos +
+                            (frame[(int)CursorMode.Opp].source.term +
+                            frame[(int)CursorMode.Opp].source.outWidth) * 3 / 2 - 12,
+                            frame[(int)CursorMode.Opp].source.info[0].yPos - 2);
+                            Console.Write("Glance Oppertunity: {0}", glcOpert + 1);
+                            frame[(int)CursorMode.Opp].cur.Frame(0);
+                            break;
+                        case CursorMode.Battle:
+                            Judgement.Battle(frame[(int)CursorMode.User].source,
+                            frame[(int)CursorMode.Opp].source, ref unfilpped);
+                            cM = CursorMode.Menu;
+                            frame[(int)CursorMode.Menu].cur.Frame(frame[(int)CursorMode.Menu].index);
+                            break;
                     }
                     break;
 
                 case CursorMode.User:
                     frame[(int)CursorMode.User].SetCursor(button);
-                    if(cM == CursorMode.Menu)
+                    if (cM == CursorMode.Menu)
                         frame[(int)CursorMode.Menu].cur.Frame(0);
                     break;
-                
+
                 case CursorMode.Opp:
                     frame[(int)CursorMode.Opp].SetCursor(button);
 
@@ -493,10 +493,10 @@ namespace Triangular
                         case CursorMode.Menu:
                             frame[(int)CursorMode.Menu].cur.Frame(0);
                             break;
-                        case CursorMode.GlcMu:
-                            frame[(int)CursorMode.GlcMu].source.Frame();
+                        case CursorMode.GlanceMenu:
+                            frame[(int)CursorMode.GlanceMenu].source.Frame();
                             Effect.OppositeColor();
-                            frame[(int)CursorMode.GlcMu].source.FrameLabel(0);
+                            frame[(int)CursorMode.GlanceMenu].source.FrameLabel(0);
                             Effect.DefaultColor();
                             break;
                     }
@@ -507,9 +507,9 @@ namespace Triangular
                         Effect.DefaultColor();
                     }
                     break;
-                
-                case CursorMode.GlcMu:
-                    frame[(int)CursorMode.GlcMu].SetCursor(button);
+
+                case CursorMode.GlanceMenu:
+                    frame[(int)CursorMode.GlanceMenu].SetCursor(button);
 
                     switch (cM)
                     {
@@ -519,13 +519,13 @@ namespace Triangular
                         case CursorMode.Opp:
                             Console.SetCursorPosition(frame[(int)CursorMode.Opp].source.xPos +
                             (frame[(int)CursorMode.Opp].source.term +
-                            frame[(int)CursorMode.Opp].source.outWidth)*3/2 - 12,
+                            frame[(int)CursorMode.Opp].source.outWidth) * 3 / 2 - 12,
                             frame[(int)CursorMode.Opp].source.info[0].yPos - 2);
                             frame[(int)CursorMode.Opp].cur.Frame(0);
                             break;
                     }
                     break;
-                
+
                 default:
                     cM = CursorMode.Menu;
                     break;
@@ -533,19 +533,19 @@ namespace Triangular
             SetButton();
         }
     }
-    
-    class UserFrame: Cursor, ICusor
+
+    class UserFrame : Cursor, ICusor
     {
-        public UserFrame (ref FrontFrame source)
+        public UserFrame(ref FrontFrame source)
         {
             this.source = source;
             this.cur = new CursorFrame(source);
-            this.dCur = new DeleteCursor(source);   
+            this.dCur = new DeleteCursor(source);
         }
 
         public FrontFrame source { get; set; }
         public CursorFrame cur { get; set; }
-        public DeleteCursor dCur  { get; set; }
+        public DeleteCursor dCur { get; set; }
         public int index { get; set; }
         private CardInfo tempInfo;
         private bool grab;
@@ -555,17 +555,19 @@ namespace Triangular
             switch (button.Key)
             {
                 case ConsoleKey.LeftArrow:
-                    if(index > 0)
+                    if (index > 0)
                     {
                         dCur.Frame(index--);
                         cur.Frame(index);
-                    }break;
+                    }
+                    break;
                 case ConsoleKey.RightArrow:
-                    if(index < source.info.Length - 1)
+                    if (index < source.info.Length - 1)
                     {
                         dCur.Frame(index++);
                         cur.Frame(index);
-                    }break;
+                    }
+                    break;
                 case ConsoleKey.Enter:
                     if (source.info[index].survival)
                     {
@@ -583,13 +585,14 @@ namespace Triangular
                             Effect.OppositeColor();
                             source.Frame(index);
                             Effect.DefaultColor();
-                            grab= true;
+                            grab = true;
                             tempInfo = source.info[index];
                             nth = index;
                         }
-                    }break;
+                    }
+                    break;
                 case ConsoleKey.Escape:
-                    if(grab)
+                    if (grab)
                     {
                         grab = false;
                         source.Frame(nth);
@@ -599,7 +602,8 @@ namespace Triangular
                         dCur.Frame(index);
                         index = 0;
                         cM = CursorMode.Menu;
-                    }break;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -609,7 +613,7 @@ namespace Triangular
 
     class MenuFrame : Cursor, ICusor
     {
-        public MenuFrame (FrontFrame source)
+        public MenuFrame(FrontFrame source)
         {
             this.source = source;
             this.cur = new CursorFrame(source);
@@ -618,7 +622,7 @@ namespace Triangular
 
         public FrontFrame source { get; set; }
         public CursorFrame cur { get; set; }
-        public DeleteCursor dCur  { get; set; }
+        public DeleteCursor dCur { get; set; }
         public int index { get; set; }
         public void SetCursor(ConsoleKeyInfo button)
         {
@@ -626,15 +630,16 @@ namespace Triangular
             switch (button.Key)
             {
                 case ConsoleKey.LeftArrow:
-                    if(index > 0)
+                    if (index > 0)
                     {
                         dCur.Frame(index--);
                         cur.Frame(index);
-                    }break;
+                    }
+                    break;
                 case ConsoleKey.RightArrow:
-                    if(glcOpert < 0)
+                    if (glcOpert < 0)
                     {
-                        if(index < source.info.Length - 2)
+                        if (index < source.info.Length - 2)
                         {
                             dCur.Frame(index++);
                             cur.Frame(index);
@@ -642,7 +647,7 @@ namespace Triangular
                     }
                     else
                     {
-                        if(index < source.info.Length - 1)
+                        if (index < source.info.Length - 1)
                         {
                             dCur.Frame(index++);
                             cur.Frame(index);
@@ -650,7 +655,7 @@ namespace Triangular
                     }
                     break;
                 case ConsoleKey.Enter:
-                    switch(index)
+                    switch (index)
                     {
                         case 0:
                             cM = CursorMode.User;
@@ -661,9 +666,9 @@ namespace Triangular
                             dCur.Frame(index);
                             break;
                         case 2:
-                            if(unGlanced)
+                            if (unGlanced)
                             {
-                                cM = CursorMode.GlcMu;
+                                cM = CursorMode.GlanceMenu;
                                 dCur.Frame(index);
                                 index = 0;
                             }
@@ -671,8 +676,9 @@ namespace Triangular
                             {
                                 cM = CursorMode.Opp;
                                 dCur.Frame(index);
-                                index =0;
-                            }break;
+                                index = 0;
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -690,8 +696,8 @@ namespace Triangular
     {
         public static void SetColor(ConsoleColor back = ConsoleColor.Black, ConsoleColor fore = ConsoleColor.Gray)
         {
-            Console.BackgroundColor=back;
-            Console.ForegroundColor=fore;
+            Console.BackgroundColor = back;
+            Console.ForegroundColor = fore;
         }
         public static void DefaultColor()
         {
@@ -700,14 +706,14 @@ namespace Triangular
         }
         public static void ShadeColor()
         {
-            Console.ForegroundColor=ConsoleColor.DarkGray;
+            Console.ForegroundColor = ConsoleColor.DarkGray;
         }
         public static void OppositeColor()
         {
-            Console.BackgroundColor= ConsoleColor.Gray;
-            Console.ForegroundColor=ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.Black;
         }
-        public static void Blink (BackFrame frame, int nth, int delay, ConsoleColor f, ConsoleColor b = ConsoleColor.Black)
+        public static void Blink(BackFrame frame, int nth, int delay, ConsoleColor f, ConsoleColor b = ConsoleColor.Black)
         {
             ConsoleColor backColor, foreColor;
             backColor = Console.BackgroundColor;
@@ -720,7 +726,7 @@ namespace Triangular
             frame.Frame(nth);
         }
 
-        public static void Blink (BackFrame frame, int nth, int delay, ConsoleColor f)
+        public static void Blink(BackFrame frame, int nth, int delay, ConsoleColor f)
         {
             ConsoleColor backColor, foreColor;
             backColor = Console.BackgroundColor;
@@ -733,7 +739,7 @@ namespace Triangular
             //frame.Frame(nth);
         }
 
-        public static void Blink (BackFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
+        public static void Blink(BackFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
         {
             ConsoleColor backColor, foreColor;
             backColor = Console.BackgroundColor;
@@ -746,7 +752,7 @@ namespace Triangular
             frame.Frame(nth);
         }
 
-        public static void Blink (BackFrame frame, int nth, int delay, ConsoleColor foreStartColor, ConsoleColor backStartColor, 
+        public static void Blink(BackFrame frame, int nth, int delay, ConsoleColor foreStartColor, ConsoleColor backStartColor,
         ConsoleColor foreLastColor, ConsoleColor backLastColor)
         {
             SetColor(back: backStartColor, fore: foreStartColor);
@@ -757,4 +763,51 @@ namespace Triangular
         }
     }
 
+    class GlanceMenuFrame : Cursor, ICusor
+    {
+        public GlanceMenuFrame (FrontFrame source)
+        {
+
+        }
+        public FrontFrame source {get; set;}
+        public CursorFrame cur { get; set; }
+        public DeleteCursor dCur { get; set; }
+        public EmptyFrame eFrame { get; set; }
+        public int index { get; set; }
+        public void SetCursor(ConsoleKeyInfo button) //Need SetButton
+        {
+            switch (button.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (index > 0)
+                    {
+                        if (button.Key != ConsoleKey.Escape)
+                        {
+                            source.FrameLabel();
+                            Effect.OppositeColor();
+                            source.FrameLabel(--index);
+                            Effect.DefaultColor();
+                        }
+                    }break;
+                case ConsoleKey.DownArrow:
+                    if(index < source.info.Length - 1)
+                    {
+                        if (button.Key != ConsoleKey.Escape)
+                        {
+                            source.FrameLabel();
+                            Effect.OppositeColor();
+                            source.FrameLabel(++index);
+                            Effect.DefaultColor();
+                        }
+                    }break;
+                case ConsoleKey.Enter:
+                    eFrame.Frame();
+                    index = 0;
+                    cM= CursorMode.Menu;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }
