@@ -533,6 +533,79 @@ namespace Triangular
             SetButton();
         }
     }
+    
+    class UserFrame: Cursor, ICusor
+    {
+        public UserFrame (ref FrontFrame source)
+        {
+            this.source = source;
+            this.cur = new CursorFrame(source);
+            this.dCur = new DeleteCursor(source);   
+        }
+
+        public FrontFrame source { get; set; }
+        public CursorFrame cur { get; set; }
+        public DeleteCursor dCur  { get; set; }
+        public int index { get; set; }
+        private CardInfo tempInfo;
+        private bool grab;
+        private int nth;
+        public void SetCursor(ConsoleKeyInfo button)
+        {
+            switch (button.Key)
+            {
+                case ConsoleKey.LeftArrow:
+                    if(index > 0)
+                    {
+                        dCur.Frame(index--);
+                        cur.Frame(index);
+                    }break;
+                case ConsoleKey.RightArrow:
+                    if(index < source.info.Length - 1)
+                    {
+                        dCur.Frame(index++);
+                        cur.Frame(index);
+                    }break;
+                case ConsoleKey.Enter:
+                    if (source.info[index].survival)
+                    {
+                        if (grab)
+                        {
+                            source.info[nth] = source.info[index];
+                            source.info[index] = tempInfo;
+                            Effect.DefaultColor();
+                            source.Frame(index);
+                            source.Frame(nth);
+                            grab = false;
+                        }
+                        else
+                        {
+                            Effect.OppositeColor();
+                            source.Frame(index);
+                            Effect.DefaultColor();
+                            grab= true;
+                            tempInfo = source.info[index];
+                            nth = index;
+                        }
+                    }break;
+                case ConsoleKey.Escape:
+                    if(grab)
+                    {
+                        grab = false;
+                        source.Frame(nth);
+                    }
+                    else
+                    {
+                        dCur.Frame(index);
+                        index = 0;
+                        cM = CursorMode.Menu;
+                    }break;
+                default:
+                    break;
+            }
+            Console.SetCursorPosition(0, 0);
+        }
+    }
 
     
 }
