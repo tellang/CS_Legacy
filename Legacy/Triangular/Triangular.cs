@@ -810,4 +810,97 @@ namespace Triangular
             }
         }
     }
+
+    class OppFrame : Cursor, ICusor // get more
+    {
+        public OppFrame (ref FrontFrame source)
+        {
+            this.source = source;
+            this.cur = new CursorFrame(source);
+            this.dCur = new DeleteCursor(source);
+        }
+        public FrontFrame source {get; set;}
+        public CursorFrame cur { get; set; }
+        public DeleteCursor dCur { get; set; }
+        public int index { get; set; }
+
+        public void SetCursor(ConsoleKeyInfo button)
+        {
+            switch (button.Key)
+            {
+                case ConsoleKey.LeftArrow:
+                    if(index > 0)
+                    {
+                        dCur.Frame(index--);
+                        cur.Frame(index);
+                    }
+                    break;
+                case ConsoleKey.RightArrow:
+                    if(index < source.info.Length - 1)
+                    {
+                        dCur.Frame(index++);
+                        cur.Frame(index);
+                    }
+                case ConsoleKey.Enter:
+                    if (source.info[index].survival)
+                    {
+                        int delay = 500;
+                        EffectFrame efFrame = new EffectFrame(source);
+                        if(unfilpped[index])
+                        {
+                            if(glcOpert > -1)
+                            {
+                                if(Judgement.Random(Judgement.flip[glcOpert]))
+                                {
+                                    source.Frame(index);
+                                    unfilpped[index] = false;
+                                    //efFrame.BlinkMessage(index, "Success!", delay, )
+                                }
+                            }
+                        }
+                    }
+                default:
+            }
+        }
+    }
+
+    class Mapframe // need
+    {
+        public Mapframe (ref FrontFrame source)
+        {
+
+        }
+        public FrontFrame source {get; set;}
+        public CursorFrame cur { get; set; }
+        public DeleteCursor dCur { get; set; }
+        public int index { get; set; }
+    }
+
+    class UI //need
+    {
+        public static void SuperiorIcon(int xPos, int yPos)
+        {
+
+        }
+    }
+
+    class EffectFrame
+    {
+        
+    }
+
+    class Judgement
+    {
+
+    }
+
+    class GameManager
+    {
+
+    }
+
+    class MainApp
+    {
+        
+    }
 }
