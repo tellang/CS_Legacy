@@ -886,7 +886,134 @@ namespace Triangular
 
     class EffectFrame
     {
+        public int xPos { get; set; }
+        public int yPos { get; set; }
+        public int term { get; set; }
+        public int inWidth { get; set; }
+        public int inHeight { get; set; }
+        public int outWidth { get; set; }
+        public int outHeight { get; set; }
+
+        public string stat { get; set; }
+        public int nextCardXPos { get; set; }
+        private string[] thifSkill = new string[24] {構, 機, 顧, 饋, 朽, 鎭, 蘇, 築, 
+        臟, 臝, 臙, 臘, 艪, 聳, 聱, 驌, 
+        驂, 軌, 黑, 俗, 套, 休, 宦, 情};
+        private int[] term = new int [24] {20, 15, 10, 5, 1};
+        private bool[, ] unUsed = new bool[5, 4];
+
+        public EffectFrame (int xPos, int yPos, int width, int height, int term): base(xPos, yPos, width, height, term)
+        {
+           stat = "Effect";
+        }
         
+        public EffectFrame (ISequence seq): base(seq)
+        {
+            stat = "Effect";
+        }
+
+        public void Impact (int xPos, int yPos, int delay)
+        {
+            int rx, ry, i;
+            i=0;
+            Random rand = new Random();
+
+            for(int y =0; y < 5; y++){ //5x4?
+                for (int x = 0; x < 4; x++)
+                {
+                    unUsed[y, x] = true;
+                }
+            }
+
+            while(i < 12)
+            {
+                rx = rand.Next(1, 5);
+                ry = rand.Next(1, 6);
+
+                while(unUsed[ry - 1, rx - 1])
+                {
+                    if ((rx + ry) < 6)
+                    {
+                        Cursor(xPos + 2 * (rx + ry), yPos, "★");
+                        Thread.Sleep(delay);
+                        for (int i = 0; i <= ry; i++)
+                        {
+                            Cursor(xPos + 2 * (rx + ry - 1 - i), yPos + 1 + i, "★");
+                            Cursor(xPos + 2 * (rx + ry - i), yPos + i, "☆");
+                            Thread.Sleep(delay);
+                            Cursor(xPos + 2 * (rx + ry - i), yPos + i, "  ");
+                        }
+                    }
+                    else
+                    {
+                        Cursor(xPos + 10, yPos + ry - (5 - rx), "★");
+                        Thread.Sleep(delay);
+                        for (int i = 0; i <= (4-rx); i++)
+                        {
+                            Cursor(xPos + 8 - 2*i, yPos + ry - (4 - rx) + i, "★");
+                            Cursor(xPos + 10 - 2*i, yPos + ry - (4 - rx) + i - 1, "☆");
+                            Thread.Sleep(delay);
+                            Cursor(xPos + 10 - 2*i, yPos + ry - (4 - rx) + i - 1, "  ");
+                        }
+                    }
+                    Cursor(xPos + rx * 2, yPos + ry, "●");
+                    Thread.Sleep(delay*2);
+                    Cursor(xPos + rx * 2, yPos + ry, "○");
+                    Thread.Sleep(delay);
+                    Cursor(xPos + rx * 2 - 1, yPos + ry, "(○)");
+                    Thread.Sleep(delay*2);
+                    Cursor(xPos + (rx * - 1)*2, yPos + ry, "(_ _)");
+                    Thread.Sleep(delay*2);
+                    Cursor(xPos + (rx * - 1)*2, yPos + ry, "         ");
+
+                    unUsed[ry - 1, rx - 1] = false;
+                    i++;
+                }
+            }
+            Thread.Sleep(500);
+        }
+
+        public void Impact(int xPos, int yPos)
+        {
+            Effect.SetColor(ConsoleColor.Black, ConsoleColor.Cyan);
+            Impact(xPos, yPos, 15);
+            Effect.DefaultColor();
+        }
+
+        public void Impact (int nth)
+        {
+            Impact(xPos + nextCardXPos * nth, yPos);
+        }
+
+        public void Slash (int xPos, int yPos)
+        {
+            Effect.SetColor(ConsoleColor.Black, ConsoleColor.Red);
+            Slash(xPos, yPos, 17);
+            Effect.DefaultColor();
+        }
+
+        public void Slash (int xPos, int yPos, int delay)
+        {
+            Cursor(xPos, yPos, "─ ");
+            Cursor(xPos, yPos - 1, "└─");
+            Cursor(xPos, yPos + 1, "┌─");
+            Thread.Sleep(delay);
+            Cursor(xPos, yPos, "  ");
+
+            Cursor(xPos, yPos, "─━");
+            Cursor(xPos + 2, yPos + 1, "─ ");
+            Cursor(xPos + 2, yPos - 1, "─ ");
+            Thread.Sleep(delay);
+            Cursor(xPos, yPos, "  ");
+            for (int i = 0; i < 5; i++)
+            {
+                Cursor(xPos + i*2, yPos, "─━");
+                Cursor(xPos + i*2, yPos + 1, " ─ ");
+                Cursor(xPos + 2, yPos - 1, " ─ ");
+                Thread.Sleep(delay);
+                Cursor(xPos + i*2, yPos, "  ");
+            }
+        }
     }
 
     class Judgement
