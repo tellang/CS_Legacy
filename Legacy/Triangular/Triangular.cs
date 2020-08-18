@@ -811,7 +811,7 @@ namespace Triangular
         }
     }
 
-    class OppFrame : Cursor, ICusor // get more
+    class OppFrame : Cursor, ICusor 
     {
         public OppFrame (ref FrontFrame source)
         {
@@ -854,13 +854,56 @@ namespace Triangular
                                 {
                                     source.Frame(index);
                                     unfilpped[index] = false;
-                                    //efFrame.BlinkMessage(index, "Success!", delay, )
+                                    efFrame.BlinkMessage(index, "Success!", delay, fore: ConsoleColor.Green, 
+                                    back: ConsoleColor.Black);
                                 }
+                                else
+                                {
+                                    efFrame.BlinkMessage(index, "Failed", delay, fore: ConsoleColor.Red, 
+                                    back: ConsoleColor.Black);
+                                }
+                                unGlanced = false;
+                            }
+                            else
+                            {
+                                efFrame.BlinkMessage(index, "Disable", delay, fore: ConsoleColor.Magenta, 
+                                back: ConsoleColor.Black);
+                            }
+                            glcOpert -=1;
+                            Console.SetCursorPosition(source.xPos + (source.term + source.outWidth)*3/2 - 12,
+                            source.info[0].yPos - 2);
+                            Console.Write("Glance Oppertunity: {0}", glcOpert + 1);
+                            if(glcOpert < 0)
+                            {
+                                dCur.Frame(index);
+                                index = 0;
+                                cM = CursorMode.Menu;
                             }
                         }
+                        else
+                        {
+                            efFrame.BlinkMessage(index, "Flipped", delay, fore: ConsoleColor.Yellow, 
+                            back: ConsoleColor.Black);
+                        }
+                    }
+                    break;
+                case ConsoleKey.Escape:
+                    if(unGlanced)
+                    {
+                        dCur.Frame(index);
+                        index = 0;
+                        cM = CursorMode.GlanceMenu;
+                    }
+                    else
+                    {
+                        dCur.Frame(index);
+                        index = 0;
+                        cM = CursorMode.Menu;
                     }
                 default:
+                    break;
             }
+            Console.SetCursorPosition(0, 0);
         }
     }
 
