@@ -1009,10 +1009,160 @@ namespace Triangular
             {
                 Cursor(xPos + i*2, yPos, "─━");
                 Cursor(xPos + i*2, yPos + 1, " ─ ");
-                Cursor(xPos + 2, yPos - 1, " ─ ");
+                Cursor(xPos + i*2, yPos - 1, " ─ ");
                 Thread.Sleep(delay);
                 Cursor(xPos + i*2, yPos, "  ");
             }
+            Cursor(xPos + 8, yPos, "─━");
+            Cursor(xPos + 10, yPos + 1, "┴ ");
+            Cursor(xPos + 10, yPos - 1, "┬ ");
+            Thread.Sleep(delay);
+            Cursor(xPos + 8, yPos, "  ");
+            Cursor(xPos + 10, yPos, "─ ");
+            Thread.Sleep(delay);
+            Cursor(xPos + 10, yPos, "  ");
+
+            Thread.Sleep(500);
+        }
+
+        public void Slash (int nth)
+        {
+            Slash(xPos + nextCardXPos * nth, yPos + inHeight/2 + 1);
+        }
+        
+        public void Claw (int xPos, int yPos)
+        {
+            Effect.SetColor(ConsoleColor.Black, ConsoleColor.Magenta);
+            Claw(xPos, yPos);
+            Effect.DefaultColor();
+        }
+
+        public void Claw (int xPos, int yPos, int delay)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Cursor(xPos, yPos + i, "＼");
+            }
+            Thread.Sleep(delay);
+            for (int i = 1; i <= 4; i++)
+            {
+                for (int j = 1; j <= 4; j++)
+                {
+                    Cursor(xPos + i * 2, yPos + j + i - 2, "＼");
+                }
+                Thread.Sleep(delay);
+            }
+            for(int i=4; i < 7; i++)
+            {
+                Cursor(xPos + i*2, yPos + i, "＼");
+            }
+            Thread.Sleep(delay*20);
+        }
+        public void Claw (int nth)
+        {
+            Claw(xPos + nextCardXPos * nth, yPos);
+        }
+
+        public void Cunjering (int xPos, int yPos, int delay)
+        {
+            int rx, ry;
+            int i = 0;
+            Random rand = new Random();
+
+            for(int y = 0; y < 5; y++)
+            {
+                for (int x = 0; x < 4; x++)
+                {
+                    unUsed[y, x] = true;
+                }
+            }
+
+            while(i<20)
+            {
+                rx = rand.Next(0, 4);
+                ry = rand.Next(0, 5);
+
+                while(unUsed[ry, rx])
+                {
+                    Cursor(xPos + 2 + rx * 2, yPos + 1 + ry, thifSkill[i]);
+                    unUsed[ry, rx] = false;
+                    i++;
+                    Thread.Sleep(delay*term[i]);
+                }
+            }
+            Thread.Sleep(500);
+        }
+
+        public void Cunjering (int xPos, int yPos)
+        {
+            Effect.SetColor(fore:ConsoleColor.Red, back:ConsoleColor.Yellow);
+            Cunjering(xPos, yPos, 20);
+            Effect.DefaultColor();
+        }
+
+        public void Cunjering(int nth)
+        {
+            Cunjering(xPos + nextCardXPos * nth, yPos);
+        }
+
+        public static void Cursor (int xPos, int yPos, string icon)
+        {
+            Console.SetCursorPosition(xPos, yPos);
+            Console.WriteLine(icon);
+        }
+
+        public void Message (int xPos, int yPos, string message)
+        {
+            Cursor(xPos + (outWidth - message.Length)/2, yPos, message);
+        }
+
+        public void Cursor (int xPos, int yPos)
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                for (int j = 1; j <= 4; j++)
+                {
+                    Cursor(xPos + j*2, yPos + i, "  ");
+                }
+            }
+        }
+
+        public void AttackEffect (FrontFrame atk, int atkNth, int defNth)
+        {
+            if(atk.info[atkNth].job == "Warrior")
+            {
+                Slash(defNth);
+            }
+            else if (atk.info[atkNth].job == "Thif")
+            {
+                Cunjering(defNth);
+            }
+            else if (atk.info[atkNth].job == "Sorcerer")
+            {
+                Impact(defNth);
+            }
+            else
+            {
+                Claw(defNth);
+            }
+        }
+
+        public void BlinkMessage (int nth, string message)
+        {
+            Message(xPos + nextCardXPos * nth, yPos - 1, message);
+        }
+
+        public void BlinkMessage (int nth, string message, int delay, ConsoleColor fore, ConsoleColor back)
+        {
+            ConsoleColor backC, foreC;
+            backC = Console.BackgroundColor;
+            foreC = Console.ForegroundColor;
+
+            Effect.SetColor(fore: fore, back: back);
+            BlinkMessage(nth, message);
+            Thread.Sleep(delay);
+            Effect.SetColor(back: back, fore: fore);
+            BlinkMessage(nth, "       "); //need adjustment
         }
     }
 
