@@ -1272,7 +1272,45 @@ namespace Triangular
 
     class GameManager
     {
+        public static bool CheckGameOver (CardInfo cardInfo)
+        {
 
+        }
+
+        public static bool CheckGameOver (FrontFrame user, FrontFrame opp)
+        {
+
+        }
+
+        public void Shuffle (string[] before, ref CardInfo[] after)
+        {
+
+        }
+
+        public void Zeroize (ref bool[] flipped)
+        {
+
+        }
+
+        public void Zeroize (ref CardInfo[] cardInfo)
+        {
+
+        }
+
+        public void Zeroize (FrontFrame user, FrontFrame opponent)
+        {
+
+        }
+
+        public void Frame (FrontFrame menu, FrontFrame user, FrontFrame opponent, BackFrame opponentBack)
+        {
+
+        }
+
+        public void NewGame()
+        {
+            
+        }
     }
 
     class MainApp
