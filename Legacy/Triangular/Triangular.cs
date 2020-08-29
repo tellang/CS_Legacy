@@ -435,7 +435,7 @@ namespace Triangular
         public static int glcOpert { get; set; }
         public static int oLife { get; set; }
         public static int uLife { get; set; }
-        public static bool[] unfilpped = new bool[] { true, true, true };
+        public static bool[] unflipped = new bool[] { true, true, true };
         public static CursorMode cM { get; set; }
         public static bool unGlanced { get; set; }
         public ConsoleKeyInfo button { get; set; }
@@ -472,7 +472,7 @@ namespace Triangular
                             break;
                         case CursorMode.Battle:
                             Judgement.Battle(frame[(int)CursorMode.User].source,
-                            frame[(int)CursorMode.Opp].source, ref unfilpped);
+                            frame[(int)CursorMode.Opp].source, ref unflipped);
                             cM = CursorMode.Menu;
                             frame[(int)CursorMode.Menu].cur.Frame(frame[(int)CursorMode.Menu].index);
                             break;
@@ -846,14 +846,14 @@ namespace Triangular
                     {
                         int delay = 500;
                         EffectFrame efFrame = new EffectFrame(source);
-                        if(unfilpped[index])
+                        if(unflipped[index])
                         {
                             if(glcOpert > -1)
                             {
                                 if(Judgement.Random(Judgement.flip[glcOpert]))
                                 {
                                     source.Frame(index);
-                                    unfilpped[index] = false;
+                                    unflipped[index] = false;
                                     efFrame.BlinkMessage(index, "Success!", delay, fore: ConsoleColor.Green, 
                                     back: ConsoleColor.Black);
                                 }
@@ -1211,6 +1211,62 @@ namespace Triangular
 
     class Judgement
     {
+        const int atkSuccess = 75; //attack success rate
+        const int adventBPAtk = 70; //advantageous battle preempptive attack rate
+        const int normalBPAtk = 50; //normal battle preempptive attack rate
+        const int penalty = 10;
+        const int critical = 15;
+        const int delay = 500;
+        public static int[] flip = {85, 50, 33}; //card glance success rate, x1, x2, x3 cards
+
+        public static Battle (FrontFrame user, FrontFrame opp, ref bool[] unflipped)
+        {
+            int opponentLife, userLife;
+        }
+
+        public static bool Random (int percent)
+        {
+
+        }
+
+        public static FrontFrame TheOtherJob (FrontFrame cont, FrontFrame user, FrontFrame opp)
+        {
+
+        }
+
+        public static void CriticalHit (FrontFrame frame, int nth, int percent)
+        {
+
+        }
+
+        public static FrontFrame Triumpher (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
+        {
+
+        }
+
+        public static FrontFrame Loser (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
+        {
+
+        }
+
+        public static string Superior (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
+        {
+
+        }
+
+        public static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
+        FrontFrame inferior, int nthInferior, ConsoleColor inferiorColor, int superiorAtk, int superiorCritical,
+        int inferiorAtk, int inferiorCritical)
+        {
+            
+        }
+
+        public static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
+        FrontFrame inferior, int nthInferior, ConsoleColor inferiorColor, int percent)
+        {
+            
+        }
+
 
     }
 
