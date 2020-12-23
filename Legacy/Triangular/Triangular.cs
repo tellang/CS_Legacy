@@ -713,7 +713,7 @@ namespace Triangular
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.Black;
         }
-        public static void Blink(BackFrame frame, int nth, int delay, ConsoleColor f, ConsoleColor b = ConsoleColor.Black)
+        public static void Blink(BaseFrame frame, int nth, int delay, ConsoleColor f, ConsoleColor b = ConsoleColor.Black)
         {
             ConsoleColor backColor, foreColor;
             backColor = Console.BackgroundColor;
@@ -726,7 +726,7 @@ namespace Triangular
             frame.Frame(nth);
         }
 
-        public static void Blink(BackFrame frame, int nth, int delay, ConsoleColor f)
+        public static void Blink(BaseFrame frame, int nth, int delay, ConsoleColor f)
         {
             ConsoleColor backColor, foreColor;
             backColor = Console.BackgroundColor;
@@ -739,7 +739,7 @@ namespace Triangular
             //frame.Frame(nth);
         }
 
-        public static void Blink(BackFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
+        public static void Blink(FrontFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
         {
             ConsoleColor backColor, foreColor;
             backColor = Console.BackgroundColor;
@@ -752,7 +752,7 @@ namespace Triangular
             frame.Frame(nth);
         }
 
-        public static void Blink(BackFrame frame, int nth, int delay, ConsoleColor foreStartColor, ConsoleColor backStartColor,
+        public static void Blink(BaseFrame frame, int nth, int delay, ConsoleColor foreStartColor, ConsoleColor backStartColor,
         ConsoleColor foreLastColor, ConsoleColor backLastColor)
         {
             SetColor(back: backStartColor, fore: foreStartColor);
