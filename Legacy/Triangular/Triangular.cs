@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Triangular
 {
@@ -37,7 +38,7 @@ namespace Triangular
     interface ITerm { public int term { get; set; } }
     interface IStatus { public string stat { get; set; } }
     interface INextCardXPos { public int nextCardXPos { get; set; } }
-    interface IRandom { public bool Random(int percent); }
+    interface IRandomPick { public bool GenerateRandomBool(int percent); }
     interface IIdentification : IPosition, IStatus { }
     interface ISequence : IPosition, ITerm, ISize { }
     interface ICusor
@@ -66,7 +67,6 @@ namespace Triangular
         public CardInfo[] opp;
         public bool isCleared { get; set; }
     }
-
     class BaseFrame : ISequence, IStatus, INextCardXPos
     {
         public BaseFrame(int xPos, int yPos, int width, int height, int term)
@@ -851,7 +851,7 @@ namespace Triangular
                         {
                             if(glcOpert > -1)
                             {
-                                if(Judgement.Random(Judgement.flip[glcOpert]))
+                                if(Judgement.GenerateRandomBool(Judgement.flip[glcOpert]))
                                 {
                                     source.PrintFrame(index);
                                     isUnflipped[index] = false;
@@ -1206,24 +1206,64 @@ namespace Triangular
 
     class Judgement
     {
-        const int atkSuccess = 75; //attack success rate
-        const int adventBPAtk = 70; //advantageous battle preempptive attack rate
-        const int normalBPAtk = 50; //normal battle preempptive attack rate
-        const int penalty = 10;
-        const int critical = 15;
-        const int delay = 500;
+        const string warrior = "Warrior", thif = "Thif", sorcerer = "Sorcerer", none = "None",
+        attackMent = " Attack ! ", missMent = "  Miss..  ";
+        const int atkSuccess = 75, adventBPAtk = 70, normalBPAtk = 50, penalty = 10, critical = 15, 
+        delay = 500;
         public static int[] flip = {85, 50, 33}; //card glance success rate, x1, x2, x3 cards
 
-        public static Battle (FrontFrame user, FrontFrame opp, ref bool[] isUnflipped)
+        public static void Battle (FrontFrame user, FrontFrame opp, ref bool[] isUnflipped)
         {
-            int opponentLife, userLife;
-            if (GameManager.IsCheckGameOver(user, opp))
+            int opponentIndex, userIndex;
+            if (!GameManager.IsGameOver(user, opp))
             {
+                for (opponentIndex = 0; opponentIndex < opp.info.Length; opponentIndex++)
+                {
+                    if (opp.info[opponentIndex].isSurvival)
+                    {
+                        opp.PrintFrame(opponentIndex);
+                        isUnflipped[opponentIndex] = false;
+                        break;
+                    }
+                }
+                for (userIndex = user.info.Length - 1; 0 < userIndex; userIndex--)
+                {
+                    if (user.info[userIndex].isSurvival)
+                        break;
+                }
+
+                if () //Triupmer
+                {
+                    if (user.info[userIndex].isSurvival)
+                    {
+                        opp.PrintFrame(opponentIndex);
+                        user.PrintFrame(userIndex);
+                    } else
+                    {
+                        Effect.ShadeColor();
+                        opp.PrintFrame(opponentIndex);
+                        Effect.DefaultColor();
+                        user.PrintFrame(userIndex);
+                    }
+                } else
+                {
+                    if (user.info[userIndex].isSurvival)
+                    {
+                        user.PrintFrame(userIndex);
+                        opp.PrintFrame(opponentIndex);
+                    } else
+                    {
+                        Effect.ShadeColor();
+                        user.PrintFrame(userIndex);
+                        Effect.DefaultColor();
+                        opp.PrintFrame(opponentIndex);
+                    }
+                }
 
             }
         }
 
-        public static bool Random (int percent)
+        public static bool GenerateRandomBool (int percent)
         {
             int result;
             Random rand = new Random();
@@ -1248,7 +1288,7 @@ namespace Triangular
             ConsoleColor yellow = ConsoleColor.Yellow;
             ConsoleColor white = ConsoleColor.White;
 
-            if(Random(percent))
+            if(GenerateRandomBool(percent))
             {
                 Effect.Blink(frame, nth, delay, " Critical!!! ", f: black, b: yellow);
                 frame.info[nth].lives -= 2;
@@ -1278,24 +1318,77 @@ namespace Triangular
 
         public static FrontFrame Triumpher (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
-
+            if (Superior(user, nthUser, opp, nthOpp) == user.info[nthUser].job)
+            {
+                Effect.Blink(user, nthUser, 0, f:ConsoleColor.Green);
+                Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Red);
+                return 
+            }
         }
 
         public static FrontFrame Loser (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
-
+            
         }
 
         public static string Superior (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
-
+            string userJob = user.info[nthUser].job, opponentJob = opp.info[nthOpp].job;
+            return Superior(userJob, opponentJob);
         }
 
-        public static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
+        private static string Superior (string job0, string job1)
+        {
+            List<string> jobSet = new List<string>();
+            jobSet.Add(job0);
+            jobSet.Add(job1);
+            if (jobSet.Contains(warrior) && jobSet.Contains(thif))
+                return thif;
+            else if (jobSet.Contains(thif) && jobSet.Contains(sorcerer))
+                return sorcerer;
+            else if (jobSet.Contains(sorcerer) && jobSet.Contains(warrior))
+                return warrior;
+            else
+                return none;
+        }
+
+        private static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
         FrontFrame inferior, int nthInferior, ConsoleColor inferiorColor, int superiorAtk, int superiorCritical,
         int inferiorAtk, int inferiorCritical)
         {
-            
+            ConsoleColor black = ConsoleColor.Black;
+            ConsoleColor cyan = ConsoleColor.Cyan;
+            ConsoleColor magenta = ConsoleColor.Magenta;
+            EffectFrame superiorEffect = new EffectFrame(superior);
+            EffectFrame inferiorEffect = new EffectFrame(inferior);
+            BaseFrame superiorBase = new BaseFrame(superior);
+            BackFrame inferiorBase = new BackFrame(inferior);
+
+            while(true)
+            {
+                Effect.Blink(superiorBase, nthSuperior, delay, foreStartColor: black, 
+                backStartColor: superiorColor, foreLastColor: superiorColor, backLastColor: black);
+                Effect.Blink(superior, nthSuperior, delay, attackMent, f: black, b: cyan);
+                inferiorEffect.AttackEffect(superior, nthSuperior, nthInferior);
+                if(GenerateRandomBool(superiorAtk))
+                {
+                    CriticalHit(inferior, nthInferior, superiorCritical);
+                    return superior;
+                } else 
+                {
+                    Effect.Blink(inferior, nthInferior, delay, missMent, f:black, b:magenta);
+                    Effect.Blink(inferiorBase, nthInferior, delay, foreStartColor: black, backStartColor: inferiorColor, 
+                    foreLastColor: inferiorColor, backLastColor: black);
+                    Effect.Blink(inferior, nthInferior, delay, attackMent, f:black, b: cyan);
+                    superiorEffect.AttackEffect(inferior, nthInferior, nthSuperior);
+                    if (GenerateRandomBool(inferiorAtk))
+                    {
+                        CriticalHit(superior, nthSuperior, inferiorCritical);
+                        return inferior;
+                    }
+                    Effect.Blink(superior, nthSuperior, delay, missMent, f:black, b:magenta);
+                }
+            }
         }
 
         public static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
@@ -1309,7 +1402,7 @@ namespace Triangular
 
     class GameManager
     {
-        public static bool IsCheckGameOver (CardInfo cardInfo)
+        public static bool IsGameOver (CardInfo cardInfo)
         {
             if(cardInfo.isSurvival)
                 return false;
@@ -1317,10 +1410,10 @@ namespace Triangular
                 return true;
         }
 
-        public static bool IsCheckGameOver (FrontFrame user, FrontFrame opp)
+        public static bool IsGameOver (FrontFrame user, FrontFrame opp)
         {
-            if (Array.TrueForAll<CardInfo>(user.info, IsCheckGameOver) || 
-            Array.TrueForAll<CardInfo>(opp.info, IsCheckGameOver))
+            if (Array.TrueForAll<CardInfo>(user.info, IsGameOver) || 
+            Array.TrueForAll<CardInfo>(opp.info, IsGameOver))
                 return true;
             else
                 return false;
