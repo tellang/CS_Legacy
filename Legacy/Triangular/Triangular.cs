@@ -108,7 +108,7 @@ namespace Triangular
 
         public int this[int nth] { get { return xPos + nextCardXPos * nth; } }
 
-        public virtual void Frame(int xPos, int yPos)
+        public virtual void PrintFrame(int xPos, int yPos)
         {
             Console.SetCursorPosition(xPos, yPos);
             Console.Write(" ┏ ");
@@ -132,7 +132,7 @@ namespace Triangular
             Console.Write("┛ ");
         }
 
-        public virtual void CleanFrame(int xPos, int yPos)
+        public virtual void PrintCleanFrame(int xPos, int yPos)
         {
             Console.SetCursorPosition(xPos, yPos);
             Console.Write(" ┏ ");
@@ -154,26 +154,26 @@ namespace Triangular
             Console.Write("┛ ");
         }
 
-        public void Frame(int xPos, int yPos, int num)
+        public void PrintFrame(int xPos, int yPos, int num)
         {
             for (int i = 0; i < num; i++)
-                Frame(xPos + nextCardXPos * num, yPos);
+                PrintFrame(xPos + nextCardXPos * num, yPos);
         }
 
-        public virtual void Frame(int nth)
+        public virtual void PrintFrame(int nth)
         {
-            Frame(xPos + nextCardXPos * nth, yPos);
+            PrintFrame(xPos + nextCardXPos * nth, yPos);
         }
 
-        public virtual void CleanFrame(int nth)
+        public virtual void PrintCleanFrame(int nth)
         {
-            CleanFrame(xPos + nextCardXPos * nth, yPos);
+            PrintCleanFrame(xPos + nextCardXPos * nth, yPos);
         }
 
-        public virtual void Frame()
+        public virtual void PrintFrame()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Frame(xPos, yPos);
+            PrintFrame(xPos, yPos);
 
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -192,9 +192,9 @@ namespace Triangular
             stat = "Back";
         }
 
-        public override void Frame(int xPos, int yPos)
+        public override void PrintFrame(int xPos, int yPos)
         {
-            base.Frame(xPos, yPos);
+            base.PrintFrame(xPos, yPos);
             for (int i = 1; i <= inHeight; i++)
             {
                 Console.SetCursorPosition(xPos + 2, yPos + i);
@@ -230,41 +230,41 @@ namespace Triangular
 
         public CardInfo[] info = new CardInfo[3];
 
-        public void FrameLabel(int xPos, int yPos, string label)
+        public void PrintFrameLabel(int xPos, int yPos, string label)
         {
             Console.SetCursorPosition(xPos + (outWidth - label.Length) / 2, yPos + outHeight / 2);
             Console.Write(label);
         }
 
-        public void FrameLabel(int xPos, int yPos, int nth)
+        public void PrintFrameLabel(int xPos, int yPos, int nth)
         {
             Console.SetCursorPosition(xPos + (outWidth - info[nth].job.Length) / 2, yPos + outHeight / 2);
             Console.Write(info[nth].job);
         }
 
-        public virtual void FrameLabel(int nth)
+        public virtual void PrintFrameLabel(int nth)
         {
             Console.SetCursorPosition(xPos + 2, yPos + nth + 1);
             Console.Write(info[nth].job);
         }
 
-        public void FrameLabel(int nth, string label)
+        public void PrintFrameLabel(int nth, string label)
         {
-            FrameLabel(xPos + nextCardXPos * nth, yPos, label);
+            PrintFrameLabel(xPos + nextCardXPos * nth, yPos, label);
         }
 
-        public void SlotLabel(int xPos, int yPos, int nth, string[] label)
+        public void PrintSlotLabel(int xPos, int yPos, int nth, string[] label)
         {
             Console.SetCursorPosition(xPos + (outWidth - label[nth].Length) / 2, yPos + outHeight);
             Console.Write(label[nth]);
         }
 
-        public void SlotLabel(int nth, string[] label)
+        public void PrintSlotLabel(int nth, string[] label)
         {
-            SlotLabel(xPos + nextCardXPos * nth, yPos, nth, label);
+            PrintSlotLabel(xPos + nextCardXPos * nth, yPos, nth, label);
         }
 
-        public virtual void FrameLabel()
+        public virtual void PrintFrameLabel()
         {
             for (int i = 0; i < info.Length; i++)
             {
@@ -273,16 +273,16 @@ namespace Triangular
             }
         }
 
-        public override void Frame(int nth)
+        public override void PrintFrame(int nth)
         {
-            base.Frame(nth);
+            base.PrintFrame(nth);
             Lives(xPos + nextCardXPos * nth, yPos, nth);
-            FrameLabel(xPos + nextCardXPos * nth, yPos, nth);
+            PrintFrameLabel(xPos + nextCardXPos * nth, yPos, nth);
         }
 
-        public override void Frame()
+        public override void PrintFrame()
         {
-            base.Frame(0);
+            base.PrintFrame(0);
             for (int i = 0; i < info.Length; i++)
             {
                 Console.SetCursorPosition(xPos + 2, yPos + i + 1);
@@ -344,7 +344,7 @@ namespace Triangular
             stat = "Empty";
         }
 
-        public override void Frame(int xPos, int yPos)
+        public override void PrintFrame(int xPos, int yPos)
         {
             for (int i = 0; i < outHeight; i++)
             {
@@ -363,7 +363,7 @@ namespace Triangular
         {
 
         }
-        public override void Frame(int xPos, int yPos)
+        public override void PrintFrame(int xPos, int yPos)
         {
             Effect.SetColor(fore: ConsoleColor.Yellow);
             int xCur, yCur;
@@ -380,9 +380,9 @@ namespace Triangular
             Effect.DefaultColor();
         }
 
-        public override void Frame(int nth)
+        public override void PrintFrame(int nth)
         {
-            Frame(xPos + nextCardXPos * nth, yPos);
+            PrintFrame(xPos + nextCardXPos * nth, yPos);
         }
     }
 
@@ -390,7 +390,7 @@ namespace Triangular
     {
         public DeleteCursor(ISequence seq) : base(seq) { }
 
-        public override void Frame(int xPos, int yPos)
+        public override void PrintFrame(int xPos, int yPos)
         {
             int xCur, yCur;
             xCur = xPos - 2;
@@ -454,12 +454,12 @@ namespace Triangular
                     switch (cM)
                     {
                         case CursorMode.User:
-                            frame[(int)CursorMode.User].cur.Frame(0);
+                            frame[(int)CursorMode.User].cur.PrintFrame(0);
                             break;
                         case CursorMode.GlanceMenu:
-                            frame[(int)CursorMode.GlanceMenu].source.Frame();
+                            frame[(int)CursorMode.GlanceMenu].source.PrintFrame();
                             Effect.OppositeColor();
-                            frame[(int)CursorMode.GlanceMenu].source.FrameLabel(0);
+                            frame[(int)CursorMode.GlanceMenu].source.PrintFrameLabel(0);
                             Effect.DefaultColor();
                             break;
                         case CursorMode.Opp:
@@ -468,13 +468,13 @@ namespace Triangular
                             frame[(int)CursorMode.Opp].source.outWidth) * 3 / 2 - 12,
                             frame[(int)CursorMode.Opp].source.info[0].yPos - 2);
                             Console.Write("Glance Oppertunity: {0}", glcOpert + 1);
-                            frame[(int)CursorMode.Opp].cur.Frame(0);
+                            frame[(int)CursorMode.Opp].cur.PrintFrame(0);
                             break;
                         case CursorMode.Battle:
                             Judgement.Battle(frame[(int)CursorMode.User].source,
                             frame[(int)CursorMode.Opp].source, ref isUnflipped);
                             cM = CursorMode.Menu;
-                            frame[(int)CursorMode.Menu].cur.Frame(frame[(int)CursorMode.Menu].index);
+                            frame[(int)CursorMode.Menu].cur.PrintFrame(frame[(int)CursorMode.Menu].index);
                             break;
                     }
                     break;
@@ -482,7 +482,7 @@ namespace Triangular
                 case CursorMode.User:
                     frame[(int)CursorMode.User].SetCursor(button);
                     if (cM == CursorMode.Menu)
-                        frame[(int)CursorMode.Menu].cur.Frame(0);
+                        frame[(int)CursorMode.Menu].cur.PrintFrame(0);
                     break;
 
                 case CursorMode.Opp:
@@ -491,19 +491,19 @@ namespace Triangular
                     switch (cM)
                     {
                         case CursorMode.Menu:
-                            frame[(int)CursorMode.Menu].cur.Frame(0);
+                            frame[(int)CursorMode.Menu].cur.PrintFrame(0);
                             break;
                         case CursorMode.GlanceMenu:
-                            frame[(int)CursorMode.GlanceMenu].source.Frame();
+                            frame[(int)CursorMode.GlanceMenu].source.PrintFrame();
                             Effect.OppositeColor();
-                            frame[(int)CursorMode.GlanceMenu].source.FrameLabel(0);
+                            frame[(int)CursorMode.GlanceMenu].source.PrintFrameLabel(0);
                             Effect.DefaultColor();
                             break;
                     }
                     if (glcOpert < 0)
                     {
                         Effect.ShadeColor();
-                        bmu.Frame(2);
+                        bmu.PrintFrame(2);
                         Effect.DefaultColor();
                     }
                     break;
@@ -514,14 +514,14 @@ namespace Triangular
                     switch (cM)
                     {
                         case CursorMode.Menu:
-                            frame[(int)CursorMode.Menu].cur.Frame(0);
+                            frame[(int)CursorMode.Menu].cur.PrintFrame(0);
                             break;
                         case CursorMode.Opp:
                             Console.SetCursorPosition(frame[(int)CursorMode.Opp].source.xPos +
                             (frame[(int)CursorMode.Opp].source.term +
                             frame[(int)CursorMode.Opp].source.outWidth) * 3 / 2 - 12,
                             frame[(int)CursorMode.Opp].source.info[0].yPos - 2);
-                            frame[(int)CursorMode.Opp].cur.Frame(0);
+                            frame[(int)CursorMode.Opp].cur.PrintFrame(0);
                             break;
                     }
                     break;
@@ -557,15 +557,15 @@ namespace Triangular
                 case ConsoleKey.LeftArrow:
                     if (index > 0)
                     {
-                        dCur.Frame(index--);
-                        cur.Frame(index);
+                        dCur.PrintFrame(index--);
+                        cur.PrintFrame(index);
                     }
                     break;
                 case ConsoleKey.RightArrow:
                     if (index < source.info.Length - 1)
                     {
-                        dCur.Frame(index++);
-                        cur.Frame(index);
+                        dCur.PrintFrame(index++);
+                        cur.PrintFrame(index);
                     }
                     break;
                 case ConsoleKey.Enter:
@@ -576,14 +576,14 @@ namespace Triangular
                             source.info[nth] = source.info[index];
                             source.info[index] = tempInfo;
                             Effect.DefaultColor();
-                            source.Frame(index);
-                            source.Frame(nth);
+                            source.PrintFrame(index);
+                            source.PrintFrame(nth);
                             isGrabbed = false;
                         }
                         else
                         {
                             Effect.OppositeColor();
-                            source.Frame(index);
+                            source.PrintFrame(index);
                             Effect.DefaultColor();
                             isGrabbed = true;
                             tempInfo = source.info[index];
@@ -595,11 +595,11 @@ namespace Triangular
                     if (isGrabbed)
                     {
                         isGrabbed = false;
-                        source.Frame(nth);
+                        source.PrintFrame(nth);
                     }
                     else
                     {
-                        dCur.Frame(index);
+                        dCur.PrintFrame(index);
                         index = 0;
                         cM = CursorMode.Menu;
                     }
@@ -626,14 +626,14 @@ namespace Triangular
         public int index { get; set; }
         public void SetCursor(ConsoleKeyInfo button)
         {
-            cur.Frame(index);
+            cur.PrintFrame(index);
             switch (button.Key)
             {
                 case ConsoleKey.LeftArrow:
                     if (index > 0)
                     {
-                        dCur.Frame(index--);
-                        cur.Frame(index);
+                        dCur.PrintFrame(index--);
+                        cur.PrintFrame(index);
                     }
                     break;
                 case ConsoleKey.RightArrow:
@@ -641,16 +641,16 @@ namespace Triangular
                     {
                         if (index < source.info.Length - 2)
                         {
-                            dCur.Frame(index++);
-                            cur.Frame(index);
+                            dCur.PrintFrame(index++);
+                            cur.PrintFrame(index);
                         }
                     }
                     else
                     {
                         if (index < source.info.Length - 1)
                         {
-                            dCur.Frame(index++);
-                            cur.Frame(index);
+                            dCur.PrintFrame(index++);
+                            cur.PrintFrame(index);
                         }
                     }
                     break;
@@ -659,23 +659,23 @@ namespace Triangular
                     {
                         case 0:
                             cM = CursorMode.User;
-                            dCur.Frame(index);
+                            dCur.PrintFrame(index);
                             break;
                         case 1:
                             cM = CursorMode.Battle;
-                            dCur.Frame(index);
+                            dCur.PrintFrame(index);
                             break;
                         case 2:
                             if (isUnGlanced)
                             {
                                 cM = CursorMode.GlanceMenu;
-                                dCur.Frame(index);
+                                dCur.PrintFrame(index);
                                 index = 0;
                             }
                             else
                             {
                                 cM = CursorMode.Opp;
-                                dCur.Frame(index);
+                                dCur.PrintFrame(index);
                                 index = 0;
                             }
                             break;
@@ -720,10 +720,10 @@ namespace Triangular
             foreColor = Console.ForegroundColor;
 
             SetColor(back: b, fore: f);
-            frame.Frame(nth);
+            frame.PrintFrame(nth);
             Thread.Sleep(delay);
             SetColor(back: backColor, fore: foreColor);
-            frame.Frame(nth);
+            frame.PrintFrame(nth);
         }
 
         public static void Blink(BaseFrame frame, int nth, int delay, ConsoleColor f)
@@ -733,10 +733,10 @@ namespace Triangular
             foreColor = Console.ForegroundColor;
 
             SetColor(back: backColor, fore: f);
-            frame.Frame(nth);
+            frame.PrintFrame(nth);
             Thread.Sleep(delay);
             SetColor(back: backColor, fore: foreColor);
-            //frame.Frame(nth);
+            //frame.PrintFrame(nth);
         }
 
         public static void Blink(FrontFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
@@ -746,20 +746,20 @@ namespace Triangular
             foreColor = Console.ForegroundColor;
 
             SetColor(back: b, fore: f);
-            frame.FrameLabel(nth, label);
+            frame.PrintFrameLabel(nth, label);
             Thread.Sleep(delay);
             SetColor(back: backColor, fore: foreColor);
-            frame.Frame(nth);
+            frame.PrintFrame(nth);
         }
 
         public static void Blink(BaseFrame frame, int nth, int delay, ConsoleColor foreStartColor, ConsoleColor backStartColor,
         ConsoleColor foreLastColor, ConsoleColor backLastColor)
         {
             SetColor(back: backStartColor, fore: foreStartColor);
-            frame.Frame(nth);
+            frame.PrintFrame(nth);
             Thread.Sleep(delay);
             SetColor(back: backLastColor, fore: foreLastColor);
-            frame.CleanFrame(nth);
+            frame.PrintCleanFrame(nth);
         }
     }
 
@@ -783,9 +783,9 @@ namespace Triangular
                     {
                         if (button.Key != ConsoleKey.Escape)
                         {
-                            source.FrameLabel();
+                            source.PrintFrameLabel();
                             Effect.OppositeColor();
-                            source.FrameLabel(--index);
+                            source.PrintFrameLabel(--index);
                             Effect.DefaultColor();
                         }
                     }break;
@@ -794,14 +794,14 @@ namespace Triangular
                     {
                         if (button.Key != ConsoleKey.Escape)
                         {
-                            source.FrameLabel();
+                            source.PrintFrameLabel();
                             Effect.OppositeColor();
-                            source.FrameLabel(++index);
+                            source.PrintFrameLabel(++index);
                             Effect.DefaultColor();
                         }
                     }break;
                 case ConsoleKey.Enter:
-                    eFrame.Frame();
+                    eFrame.PrintFrame();
                     index = 0;
                     cM= CursorMode.Menu;
                     break;
@@ -831,15 +831,15 @@ namespace Triangular
                 case ConsoleKey.LeftArrow:
                     if(index > 0)
                     {
-                        dCur.Frame(index--);
-                        cur.Frame(index);
+                        dCur.PrintFrame(index--);
+                        cur.PrintFrame(index);
                     }
                     break;
                 case ConsoleKey.RightArrow:
                     if(index < source.info.Length - 1)
                     {
-                        dCur.Frame(index++);
-                        cur.Frame(index);
+                        dCur.PrintFrame(index++);
+                        cur.PrintFrame(index);
                     }
                     break;
                 case ConsoleKey.Enter:
@@ -853,7 +853,7 @@ namespace Triangular
                             {
                                 if(Judgement.Random(Judgement.flip[glcOpert]))
                                 {
-                                    source.Frame(index);
+                                    source.PrintFrame(index);
                                     isUnflipped[index] = false;
                                     efFrame.BlinkMessage(index, "Success!", delay, fore: ConsoleColor.Green, 
                                     back: ConsoleColor.Black);
@@ -876,7 +876,7 @@ namespace Triangular
                             Console.Write("Glance Oppertunity: {0}", glcOpert + 1);
                             if(glcOpert < 0)
                             {
-                                dCur.Frame(index);
+                                dCur.PrintFrame(index);
                                 index = 0;
                                 cM = CursorMode.Menu;
                             }
@@ -891,13 +891,13 @@ namespace Triangular
                 case ConsoleKey.Escape:
                     if(isUnGlanced)
                     {
-                        dCur.Frame(index);
+                        dCur.PrintFrame(index);
                         index = 0;
                         cM = CursorMode.GlanceMenu;
                     }
                     else
                     {
-                        dCur.Frame(index);
+                        dCur.PrintFrame(index);
                         index = 0;
                         cM = CursorMode.Menu;
                     }
@@ -1346,7 +1346,7 @@ namespace Triangular
 
         }
 
-        public void Frame (FrontFrame menu, FrontFrame user, FrontFrame opponent, BackFrame opponentBack)
+        public void PrintFrame (FrontFrame menu, FrontFrame user, FrontFrame opponent, BackFrame opponentBack)
         {
 
         }
