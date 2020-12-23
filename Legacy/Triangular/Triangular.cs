@@ -218,12 +218,12 @@ namespace Triangular
             Initialize(ref info, ref job);
         }
 
-        public FrontFrame(ISequence seq) : base(seq)
+        public FrontFrame(ISequence sequence) : base(sequence)
         {
             stat = "Front";
         }
 
-        public FrontFrame(ISequence sequence, params string[] job) : this(seq)
+        public FrontFrame(ISequence sequence, params string[] job) : this(sequence)
         {
             Initialize(ref this.info, ref job);
         }
@@ -276,13 +276,13 @@ namespace Triangular
         public override void Frame(int nth)
         {
             base.Frame(nth);
-            lives(xPos + nextCardXPos * nth, yPos, nth);
+            Lives(xPos + nextCardXPos * nth, yPos, nth);
             FrameLabel(xPos + nextCardXPos * nth, yPos, nth);
         }
 
         public override void Frame()
         {
-            base.Frame(nth);
+            base.Frame(0);
             for (int i = 0; i < info.Length; i++)
             {
                 Console.SetCursorPosition(xPos + 2, yPos + i + 1);
@@ -325,11 +325,11 @@ namespace Triangular
             backColor = Console.BackgroundColor;
             foreColor = Console.ForegroundColor;
 
-            Effect.SetColor(fore: ConsoleColor.Red, Back: backColor);
+            Effect.SetColor(fore: ConsoleColor.Red, back: backColor);
             Console.SetCursorPosition(xPos + 2, yPos + inHeight);
             for (int i = 0; i < info[nth].lives; i++)
                 Console.Write("♡");
-            Effect.SetColor(fore: foreColor, Back: backColor);
+            Effect.SetColor(fore: foreColor, back: backColor);
         }
     }
     class EmptyFrame : BaseFrame
@@ -406,7 +406,7 @@ namespace Triangular
         }
     }
 
-    class MapCursor : IButton
+    /*class MapCursor : IButton
     {
         public MapCursor(params MapInfo[] maps)
         {
@@ -419,7 +419,7 @@ namespace Triangular
         public void SetButton() { button = Console.ReadKey(true); }
         public MapInfo[] map = new MapInfo[4];
         public void Move() { }
-    }
+    }*/
 
     class Cursor : IButton
     {
@@ -841,6 +841,7 @@ namespace Triangular
                         dCur.Frame(index++);
                         cur.Frame(index);
                     }
+                    break;
                 case ConsoleKey.Enter:
                     if (source.info[index].survival)
                     {
@@ -900,6 +901,7 @@ namespace Triangular
                         index = 0;
                         cM = CursorMode.Menu;
                     }
+                    break;
                 default:
                     break;
             }
@@ -927,22 +929,15 @@ namespace Triangular
         }
     }
 
-    class EffectFrame
+    class EffectFrame : BaseFrame
     {
-        public int xPos { get; set; }
-        public int yPos { get; set; }
-        public int term { get; set; }
-        public int inWidth { get; set; }
-        public int inHeight { get; set; }
-        public int outWidth { get; set; }
-        public int outHeight { get; set; }
-
-        public string stat { get; set; }
-        public int nextCardXPos { get; set; }
-        private string[] thifSkill = new string[24] {構, 機, 顧, 饋, 朽, 鎭, 蘇, 築, 
-        臟, 臝, 臙, 臘, 艪, 聳, 聱, 驌, 
-        驂, 軌, 黑, 俗, 套, 休, 宦, 情};
-        private int[] term = new int [24] {20, 15, 10, 5, 1};
+        private string[] thifSkill = new string[24] {"構", "機", "顧", "饋", "朽", "鎭", "蘇", "築", 
+        "臟", "臝", "臙", "臘", "艪", "聳", "聱", "驌", "驂", "軌", "黑", "俗", "套", "休", "宦", "情"};
+        private int[] term = new int [24] {20, 15, 10, 5, 1, 
+        1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 
+        1, 1, 1, 1, 1, 
+        1, 1, 1, 1};
         private bool[, ] unUsed = new bool[5, 4];
 
         public EffectFrame (int xPos, int yPos, int width, int height, int term): base(xPos, yPos, width, height, term)
@@ -1226,17 +1221,55 @@ namespace Triangular
 
         public static bool Random (int percent)
         {
-
+            int result;
+            Random rand = new Random();
+            result = rand.Next(0, 100);
+            if(result < percent)
+                return true;
+            else
+                return false;
         }
 
         public static FrontFrame TheOtherJob (FrontFrame cont, FrontFrame user, FrontFrame opp)
         {
-
+            if(cont == user)
+                return opp;
+            else
+                return user;
         }
 
         public static void CriticalHit (FrontFrame frame, int nth, int percent)
         {
+            ConsoleColor black = ConsoleColor.Black;
+            ConsoleColor yellow = ConsoleColor.Yellow;
+            ConsoleColor white = ConsoleColor.White;
 
+            if(Random(percent))
+            {
+                Effect.Blink(frame, nth, delay, " Critical!!! ", f: black, b: yellow);
+                frame.info[nth].lives -= 2;
+                for (int i = 0; i < 3; i++)
+                {
+                    Effect.Blink(frame, nth, 60, foreStartColor: black, backStartColor: white,
+                    foreLastColor: white, backLastColor: black);
+                    Thread.Sleep(60);
+                    Effect.Blink(frame, nth, 60, foreStartColor: black, backStartColor: yellow,
+                    foreLastColor: yellow, backLastColor: black);
+                    Thread.Sleep(60);
+                }
+            } else
+            {
+                --frame.info[nth].lives;
+                for (int i = 0; i < 3; i++)
+                {
+                    Effect.Blink(frame, nth, 60, foreStartColor: black, backStartColor: white,
+                    foreLastColor: white, backLastColor: black);
+                    Thread.Sleep(60);
+                }
+            }
+            if (frame.info[nth].lives <= 0)
+                frame.info[nth].survival = false;
+            Effect.DefaultColor();
         }
 
         public static FrontFrame Triumpher (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
