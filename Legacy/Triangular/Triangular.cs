@@ -53,7 +53,7 @@ namespace Triangular
         public int xPos { get; set; }
         public int yPos { get; set; }
         public int lives { get; set; }
-        public bool survival { get; set; }
+        public bool isSurvival { get; set; }
         public string job { get; set; }
     }
 
@@ -64,7 +64,7 @@ namespace Triangular
         public string kind { get; set; }
         public string name { get; set; }
         public CardInfo[] opp;
-        public bool cleard { get; set; }
+        public bool isCleared { get; set; }
     }
 
     class BaseFrame : ISequence, IStatus, INextCardXPos
@@ -435,9 +435,9 @@ namespace Triangular
         public static int glcOpert { get; set; }
         public static int oLife { get; set; }
         public static int uLife { get; set; }
-        public static bool[] unflipped = new bool[] { true, true, true };
+        public static bool[] isUnflipped = new bool[] { true, true, true };
         public static CursorMode cM { get; set; }
-        public static bool unGlanced { get; set; }
+        public static bool isUnGlanced { get; set; }
         public ConsoleKeyInfo button { get; set; }
         public void SetButton() { button = Console.ReadKey(true); }
         public ICusor[] frame = new ICusor[4];
@@ -472,7 +472,7 @@ namespace Triangular
                             break;
                         case CursorMode.Battle:
                             Judgement.Battle(frame[(int)CursorMode.User].source,
-                            frame[(int)CursorMode.Opp].source, ref unflipped);
+                            frame[(int)CursorMode.Opp].source, ref isUnflipped);
                             cM = CursorMode.Menu;
                             frame[(int)CursorMode.Menu].cur.Frame(frame[(int)CursorMode.Menu].index);
                             break;
@@ -548,7 +548,7 @@ namespace Triangular
         public DeleteCursor dCur { get; set; }
         public int index { get; set; }
         private CardInfo tempInfo;
-        private bool grab;
+        private bool isGrabbed;
         private int nth;
         public void SetCursor(ConsoleKeyInfo button)
         {
@@ -569,32 +569,32 @@ namespace Triangular
                     }
                     break;
                 case ConsoleKey.Enter:
-                    if (source.info[index].survival)
+                    if (source.info[index].isSurvival)
                     {
-                        if (grab)
+                        if (isGrabbed)
                         {
                             source.info[nth] = source.info[index];
                             source.info[index] = tempInfo;
                             Effect.DefaultColor();
                             source.Frame(index);
                             source.Frame(nth);
-                            grab = false;
+                            isGrabbed = false;
                         }
                         else
                         {
                             Effect.OppositeColor();
                             source.Frame(index);
                             Effect.DefaultColor();
-                            grab = true;
+                            isGrabbed = true;
                             tempInfo = source.info[index];
                             nth = index;
                         }
                     }
                     break;
                 case ConsoleKey.Escape:
-                    if (grab)
+                    if (isGrabbed)
                     {
-                        grab = false;
+                        isGrabbed = false;
                         source.Frame(nth);
                     }
                     else
@@ -666,7 +666,7 @@ namespace Triangular
                             dCur.Frame(index);
                             break;
                         case 2:
-                            if (unGlanced)
+                            if (isUnGlanced)
                             {
                                 cM = CursorMode.GlanceMenu;
                                 dCur.Frame(index);
@@ -843,18 +843,18 @@ namespace Triangular
                     }
                     break;
                 case ConsoleKey.Enter:
-                    if (source.info[index].survival)
+                    if (source.info[index].isSurvival)
                     {
                         int delay = 500;
                         EffectFrame efFrame = new EffectFrame(source);
-                        if(unflipped[index])
+                        if(isUnflipped[index])
                         {
                             if(glcOpert > -1)
                             {
                                 if(Judgement.Random(Judgement.flip[glcOpert]))
                                 {
                                     source.Frame(index);
-                                    unflipped[index] = false;
+                                    isUnflipped[index] = false;
                                     efFrame.BlinkMessage(index, "Success!", delay, fore: ConsoleColor.Green, 
                                     back: ConsoleColor.Black);
                                 }
@@ -863,7 +863,7 @@ namespace Triangular
                                     efFrame.BlinkMessage(index, "Failed", delay, fore: ConsoleColor.Red, 
                                     back: ConsoleColor.Black);
                                 }
-                                unGlanced = false;
+                                isUnGlanced = false;
                             }
                             else
                             {
@@ -889,7 +889,7 @@ namespace Triangular
                     }
                     break;
                 case ConsoleKey.Escape:
-                    if(unGlanced)
+                    if(isUnGlanced)
                     {
                         dCur.Frame(index);
                         index = 0;
@@ -938,7 +938,7 @@ namespace Triangular
         1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 
         1, 1, 1, 1};
-        private bool[, ] unUsed = new bool[5, 4];
+        private bool[, ] isUnUsed = new bool[5, 4];
 
         public EffectFrame (int xPos, int yPos, int width, int height, int term): base(xPos, yPos, width, height, term)
         {
@@ -959,7 +959,7 @@ namespace Triangular
             for(int y =0; y < 5; y++){ //5x4?
                 for (int x = 0; x < 4; x++)
                 {
-                    unUsed[y, x] = true;
+                    isUnUsed[y, x] = true;
                 }
             }
 
@@ -968,30 +968,30 @@ namespace Triangular
                 rx = rand.Next(1, 5);
                 ry = rand.Next(1, 6);
 
-                while(unUsed[ry - 1, rx - 1])
+                while(isUnUsed[ry - 1, rx - 1])
                 {
                     if ((rx + ry) < 6)
                     {
                         Cursor(xPos + 2 * (rx + ry), yPos, "★");
                         Thread.Sleep(delay);
-                        for (int i = 0; i <= ry; i++)
+                        for (int k = 0; k <= ry; k++)
                         {
-                            Cursor(xPos + 2 * (rx + ry - 1 - i), yPos + 1 + i, "★");
-                            Cursor(xPos + 2 * (rx + ry - i), yPos + i, "☆");
+                            Cursor(xPos + 2 * (rx + ry - 1 - k), yPos + 1 + k, "★");
+                            Cursor(xPos + 2 * (rx + ry - k), yPos + k, "☆");
                             Thread.Sleep(delay);
-                            Cursor(xPos + 2 * (rx + ry - i), yPos + i, "  ");
+                            Cursor(xPos + 2 * (rx + ry - k), yPos + i, "  ");
                         }
                     }
                     else
                     {
                         Cursor(xPos + 10, yPos + ry - (5 - rx), "★");
                         Thread.Sleep(delay);
-                        for (int i = 0; i <= (4-rx); i++)
+                        for (int k = 0; k <= (4-rx); k++)
                         {
-                            Cursor(xPos + 8 - 2*i, yPos + ry - (4 - rx) + i, "★");
-                            Cursor(xPos + 10 - 2*i, yPos + ry - (4 - rx) + i - 1, "☆");
+                            Cursor(xPos + 8 - 2*k, yPos + ry - (4 - rx) + k, "★");
+                            Cursor(xPos + 10 - 2*k, yPos + ry - (4 - rx) + k - 1, "☆");
                             Thread.Sleep(delay);
-                            Cursor(xPos + 10 - 2*i, yPos + ry - (4 - rx) + i - 1, "  ");
+                            Cursor(xPos + 10 - 2*k, yPos + ry - (4 - rx) + k - 1, "  ");
                         }
                     }
                     Cursor(xPos + rx * 2, yPos + ry, "●");
@@ -1004,7 +1004,7 @@ namespace Triangular
                     Thread.Sleep(delay*2);
                     Cursor(xPos + (rx * - 1)*2, yPos + ry, "         ");
 
-                    unUsed[ry - 1, rx - 1] = false;
+                    isUnUsed[ry - 1, rx - 1] = false;
                     i++;
                 }
             }
@@ -1111,7 +1111,7 @@ namespace Triangular
             {
                 for (int x = 0; x < 4; x++)
                 {
-                    unUsed[y, x] = true;
+                    isUnUsed[y, x] = true;
                 }
             }
 
@@ -1120,10 +1120,10 @@ namespace Triangular
                 rx = rand.Next(0, 4);
                 ry = rand.Next(0, 5);
 
-                while(unUsed[ry, rx])
+                while(isUnUsed[ry, rx])
                 {
                     Cursor(xPos + 2 + rx * 2, yPos + 1 + ry, thifSkill[i]);
-                    unUsed[ry, rx] = false;
+                    isUnUsed[ry, rx] = false;
                     i++;
                     Thread.Sleep(delay*term[i]);
                 }
@@ -1214,9 +1214,13 @@ namespace Triangular
         const int delay = 500;
         public static int[] flip = {85, 50, 33}; //card glance success rate, x1, x2, x3 cards
 
-        public static Battle (FrontFrame user, FrontFrame opp, ref bool[] unflipped)
+        public static Battle (FrontFrame user, FrontFrame opp, ref bool[] isUnflipped)
         {
             int opponentLife, userLife;
+            if (GameManager.IsCheckGameOver(user, opp))
+            {
+
+            }
         }
 
         public static bool Random (int percent)
@@ -1268,7 +1272,7 @@ namespace Triangular
                 }
             }
             if (frame.info[nth].lives <= 0)
-                frame.info[nth].survival = false;
+                frame.info[nth].isSurvival = false;
             Effect.DefaultColor();
         }
 
@@ -1305,14 +1309,21 @@ namespace Triangular
 
     class GameManager
     {
-        public static bool CheckGameOver (CardInfo cardInfo)
+        public static bool IsCheckGameOver (CardInfo cardInfo)
         {
-
+            if(cardInfo.isSurvival)
+                return false;
+            else   
+                return true;
         }
 
-        public static bool CheckGameOver (FrontFrame user, FrontFrame opp)
+        public static bool IsCheckGameOver (FrontFrame user, FrontFrame opp)
         {
-
+            if (Array.TrueForAll<CardInfo>(user.info, IsCheckGameOver) || 
+            Array.TrueForAll<CardInfo>(opp.info, IsCheckGameOver))
+                return true;
+            else
+                return false;
         }
 
         public void Shuffle (string[] before, ref CardInfo[] after)
@@ -1320,7 +1331,7 @@ namespace Triangular
 
         }
 
-        public void Zeroize (ref bool[] flipped)
+        public void Zeroize (ref bool[] isUnFlipped)
         {
 
         }
