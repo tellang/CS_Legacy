@@ -443,11 +443,11 @@ namespace Triangular
         public ConsoleKeyInfo button { get; set; }
         public void SetButton() { button = Console.ReadKey(true); }
         public ICusor[] frame = new ICusor[4];
-        public BaseFrame bmu;
+        public BackFrame bmu;
 
         public void Move()
         {
-            bmu = new BaseFrame(frame[(int)CursorMode.Menu].source);
+            bmu = new BackFrame(frame[(int)CursorMode.Menu].source);
             switch (cM)
             {
                 case CursorMode.Menu:
@@ -738,7 +738,6 @@ namespace Triangular
             frame.PrintFrame(nth);
             Thread.Sleep(delay);
             SetColor(back: backColor, fore: foreColor);
-            //frame.PrintFrame(nth);
         }
 
         public static void Blink(FrontFrame frame, int nth, int delay, string label, ConsoleColor f, ConsoleColor b)
@@ -758,7 +757,7 @@ namespace Triangular
         ConsoleColor foreLastColor, ConsoleColor backLastColor)
         {
             SetColor(back: backStartColor, fore: foreStartColor);
-            frame.PrintFrame(nth);
+            frame.PrintCleanFrame(nth);
             Thread.Sleep(delay);
             SetColor(back: backLastColor, fore: foreLastColor);
             frame.PrintCleanFrame(nth);
@@ -769,7 +768,8 @@ namespace Triangular
     {
         public GlanceMenuFrame (FrontFrame source)
         {
-
+            this.source = source;
+            eFrame = new EmptyFrame(source);
         }
         public FrontFrame source {get; set;}
         public CursorFrame cur { get; set; }
@@ -803,6 +803,13 @@ namespace Triangular
                         }
                     }break;
                 case ConsoleKey.Enter:
+                    eFrame.PrintFrame();
+                    if (isUnGlanced)
+                        glcOpert = index;
+                    cM = CursorMode.Opp;
+                    index = 0;
+                    break;
+                case ConsoleKey.Escape:
                     eFrame.PrintFrame();
                     index = 0;
                     cM= CursorMode.Menu;
@@ -1069,29 +1076,23 @@ namespace Triangular
         public void Claw (int xPos, int yPos)
         {
             Effect.SetColor(ConsoleColor.Black, ConsoleColor.Magenta);
-            Claw(xPos, yPos);
+            Claw(xPos, yPos, 16);
             Effect.DefaultColor();
         }
 
         public void Claw (int xPos, int yPos, int delay)
         {
             for (int i = 0; i < 3; i++)
-            {
                 Cursor(xPos, yPos + i, "＼");
-            }
             Thread.Sleep(delay);
             for (int i = 1; i <= 4; i++)
             {
                 for (int j = 1; j <= 4; j++)
-                {
                     Cursor(xPos + i * 2, yPos + j + i - 2, "＼");
-                }
                 Thread.Sleep(delay);
             }
             for(int i=4; i < 7; i++)
-            {
-                Cursor(xPos + i*2, yPos + i, "＼");
-            }
+                Cursor(xPos + 10, yPos + i, "＼");
             Thread.Sleep(delay*20);
         }
         public void Claw (int nth)
@@ -1198,7 +1199,7 @@ namespace Triangular
             BlinkMessage(nth, message);
             Thread.Sleep(delay);
             Effect.SetColor(back: back, fore: fore);
-            BlinkMessage(nth, "       "); //need adjustment
+            BlinkMessage(nth, "        "); //need adjustment
         }
     }
 
@@ -1237,7 +1238,7 @@ namespace Triangular
 
                 if (Triumpher(user, userIndex, opp, opponentIndex) == user) //Triupmer
                 {
-                    if (opp.info[userIndex].isSurvival)
+                    if (opp.info[opponentIndex].isSurvival)
                     {
                         opp.PrintFrame(opponentIndex);
                         user.PrintFrame(userIndex);
@@ -1321,12 +1322,13 @@ namespace Triangular
 
         private static FrontFrame Triumpher (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
-            if (Superior(user, nthUser, opp, nthOpp) == user.info[nthUser].job)
+            string superJob = Superior(user, nthUser, opp, nthOpp);
+            if (superJob == user.info[nthUser].job)
             {
                 Effect.Blink(user, nthUser, 0, f:ConsoleColor.Green);
                 Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Red);
                 return ReturnTriumper(user, nthUser, opp, nthOpp);
-            } else if (Superior(user, nthUser, opp, nthOpp) == opp.info[nthUser].job)
+            } else if (superJob == opp.info[nthOpp].job)
             {
                 Effect.Blink(user, nthUser, 0, f:ConsoleColor.Red);
                 Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Green);
@@ -1334,6 +1336,8 @@ namespace Triangular
             }
             else 
             {
+                //Console.SetCursorPosition(0, 0);
+                //Console.Write(user.info[nthUser].job+" vs "+opp.info[nthOpp].job);
                 Effect.Blink(user, nthUser, 0, f:ConsoleColor.Yellow);
                 Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Yellow);
                 return ReturnTriumper(opp, nthOpp, user, nthUser);
@@ -1447,7 +1451,7 @@ namespace Triangular
     class GameManager:Job
     {
         private int xPos = 2, yPos = 4, width = 4, height = 5, term = 2, crossline = 8;
-        private string[] userJob = new string[] {sorcerer, warrior, thif}, 
+        private string[] userJob = new string[] {devil, devil, devil}, 
         oppJob = new string[] {warrior, thif, sorcerer},
         basicJob = new string[] {warrior, thif, sorcerer}, 
         additionalJob = new string[]{warrior, thif, sorcerer, devil},
