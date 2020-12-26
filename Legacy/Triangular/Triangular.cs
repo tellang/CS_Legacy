@@ -1322,13 +1322,13 @@ namespace Triangular
             {
                 Effect.Blink(user, nthUser, 0, f:ConsoleColor.Green);
                 Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Red);
-                return 
+                return ReturnTriumper(user, nthUser, opp, nthOpp);
             }
         }
 
         public static FrontFrame Loser (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
-            
+            return TheOtherJob()
         }
 
         public static string Superior (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
@@ -1391,13 +1391,43 @@ namespace Triangular
             }
         }
 
-        public static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
+        private static FrontFrame FindTriumpher (FrontFrame superior, int nthSuperior, ConsoleColor superiorColor,
         FrontFrame inferior, int nthInferior, ConsoleColor inferiorColor, int percent)
         {
-            
+            if (percent == normalBPAtk)
+            {
+                if (GenerateRandomBool(percent))
+                {
+                    return FindTriumpher(superior, nthSuperior, superiorColor, inferior, nthInferior, inferiorColor,
+                    atkSuccess, critical, atkSuccess, critical);
+                } else {
+                    return FindTriumpher(inferior, nthInferior, inferiorColor, superior, nthSuperior, superiorColor,
+                    atkSuccess, critical, atkSuccess, critical);
+                }
+            } else 
+            {
+                if (GenerateRandomBool(percent))
+                {
+                    return FindTriumpher(superior, nthSuperior, superiorColor, inferior, nthInferior, inferiorColor,
+                    atkSuccess, critical, atkSuccess - penalty, critical - penalty);
+                } else
+                {
+                    return FindTriumpher(inferior, nthInferior, inferiorColor, superior, nthSuperior, superiorColor,
+                    atkSuccess - penalty, critical - penalty, atkSuccess, critical);
+                }
+            }
         }
-
-
+    
+        private static FrontFrame ReturnTriumper (FrontFrame superior, int nthSuperior, FrontFrame inferior, int nthInferior)
+        {
+            if (Superior(superior, nthSuperior, inferior, nthInferior) == none)
+            {
+                return FindTriumpher(superior, nthSuperior, ConsoleColor.Yellow, inferior, nthInferior, ConsoleColor.Yellow, normalBPAtk);
+            } else
+            {
+                return FindTriumpher(superior, nthSuperior, ConsoleColor.Green, inferior, nthInferior, ConsoleColor.Red, adventBPAtk);
+            }
+        }
     }
 
     class GameManager
