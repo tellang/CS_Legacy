@@ -1204,10 +1204,15 @@ namespace Triangular
         }
     }
 
-    class Judgement
+    class Job
     {
-        const string warrior = "Warrior", thif = "Thif", sorcerer = "Sorcerer", none = "None",
-        attackMent = " Attack ! ", missMent = "  Miss..  ";
+        protected const string warrior = "Warrior", thif = "Thif", sorcerer = "Sorcerer", none = "None",
+        devil = "Devil";
+    }
+
+    class Judgement:Job
+    {
+        const string attackMent = " Attack ! ", missMent = "  Miss..  ";
         const int atkSuccess = 75, adventBPAtk = 70, normalBPAtk = 50, penalty = 10, critical = 15, 
         delay = 500;
         public static int[] flip = {85, 50, 33}; //card glance success rate, x1, x2, x3 cards
@@ -1441,8 +1446,16 @@ namespace Triangular
         }
     }
 
-    class GameManager
+    class GameManager:Job
     {
+        private int xPos = 2, yPos = 4, width = 4, height = 5, term = 2, crossline = 8;
+        private string[] userJob = new string[] {sorcerer, warrior, thif}, 
+        oppJob = new string[] {warrior, thif, sorcerer},
+        basicJob = new string[] {warrior, thif, sorcerer}, 
+        additionalJob = new string[]{warrior, thif, sorcerer, devil},
+        userLabel = new string[] {"3rd Slot", "2nd Slot", "1st Slot"},
+        oppLabel = new string[] {"1st Slot", "2nd Slot", "3rd Slot"};
+        private bool[] isUnShuffled = new bool[] {true, true, true};
         public static bool IsGameOver (CardInfo cardInfo)
         {
             if(cardInfo.isSurvival)
@@ -1462,37 +1475,122 @@ namespace Triangular
 
         public void Shuffle (string[] before, ref CardInfo[] after)
         {
-
+            int i = 0, r = 0;
+            Random rand = new Random();
+            while(i < 3)
+            {
+                r = rand.Next(0, before.Length);
+                if (isUnShuffled[r])
+                {
+                    after[i].job = before[r];
+                    isUnShuffled[r] = false;
+                    i++;
+                } else
+                {
+                    if(Array.TrueForAll<bool>(isUnShuffled, (n) => {
+                        return n;
+                    }))
+                        break;
+                }
+            }
         }
 
         public void Zeroize (ref bool[] isUnFlipped)
         {
-
+            for (int i = 0; i < isUnFlipped.Length; i++)
+                isUnFlipped[i] = true;
         }
 
         public void Zeroize (ref CardInfo[] cardInfo)
         {
-
+            for (int i = 0; i < cardInfo.Length; i++)
+            {
+                if(cardInfo[i].job != "Empty")
+                {
+                    cardInfo[i].isSurvival = true;
+                    cardInfo[i].lives = 4;
+                }
+            }
         }
 
         public void Zeroize (FrontFrame user, FrontFrame opponent)
         {
-
+            Cursor.glcOpert = 0;
+            Zeroize(ref isUnShuffled);
+            Zeroize(ref user.info);
+            Zeroize(ref opponent.info);
+            Zeroize(ref Cursor.isUnflipped);
+            Cursor.isUnGlanced = true;
+            Effect.DefaultColor();
+            Console.Clear();
+            Shuffle(additionalJob, ref opponent.info);
         }
 
         public void PrintFrame (FrontFrame menu, FrontFrame user, FrontFrame opponent, BackFrame opponentBack)
         {
-
+            for (int i = 0; i < 3; i++)
+            {
+                opponentBack.PrintFrame(i);
+                opponent.PrintSlotLabel(i, oppLabel);
+                user.PrintFrame(i);
+                user.PrintSlotLabel(i, userLabel);
+                menu.PrintFrame(i);
+            }
         }
 
         public void NewGame()
         {
-            
+            Console.Clear();
+            BaseFrame baseFrame = new BaseFrame(xPos, yPos, width, height, term),
+            oppBase = new BaseFrame(baseFrame[3] + crossline, baseFrame.yPos, baseFrame.inWidth, baseFrame.inHeight, baseFrame.term),
+            menuBase = new BaseFrame(baseFrame[1], yPos + height*2, width, 1, term*2),
+            glanceMenuBase = new BaseFrame(oppBase[1], menuBase.yPos + menuBase.outHeight, width, 3, term*3);
+
+            BackFrame oppBack = new BackFrame(oppBase);
+
+            FrontFrame userFront = new FrontFrame(baseFrame, userJob[0], userJob[1], userJob[2]),
+            oppFront = new FrontFrame(oppBase, oppJob[0], oppJob[1], oppJob[2]),
+            menuFront = new FrontFrame(menuBase, "Change order", "Battle !", "Glance card"),
+            glanceMenuFront = new FrontFrame(glanceMenuBase, "Flip 1 card (85%)", "Flip 2 cards (per 50%)", "Flip 3 cards (per 33%)");
+
+            MenuFrame menu = new MenuFrame(menuFront);
+            UserFrame user = new UserFrame(ref userFront);
+            GlanceMenuFrame glanceMenu = new GlanceMenuFrame(glanceMenuFront);
+            OppFrame opp = new OppFrame(ref oppFront);
+            Cursor cursor = new Cursor(menu, user, opp, glanceMenu);
+
+            Zeroize(user.source, opp.source);
+
+            for (int i = 0; i < 3; i++)
+            {
+                oppBack.PrintFrame(i);
+                user.source.PrintFrame(i);
+                user.source.PrintSlotLabel(i, userLabel);
+                menu.source.PrintFrame(i);
+            }
+
+            while(!IsGameOver(user.source, opp.source))
+            {
+                cursor.Move();
+                if(Cursor.cM == Cursor.CursorMode.Exit)
+                    break;
+                Console.SetCursorPosition(0, 0);
+            }
         }
     }
 
     class MainApp
     {
-        
+        static void Main(string[] args)
+        {
+            Console.SetWindowSize(95, 50);
+            GameManager gm = new GameManager();
+
+            while(Cursor.cM != Cursor.CursorMode.Exit)
+            {
+                gm.NewGame();
+            }
+            Console.SetCursorPosition(0, 0);
+        }
     }
 }
