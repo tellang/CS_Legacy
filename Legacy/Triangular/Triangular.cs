@@ -1232,7 +1232,7 @@ namespace Triangular
                         break;
                 }
 
-                if () //Triupmer
+                if (Triumpher(user, userIndex, opp, opponentIndex) == user) //Triupmer
                 {
                     if (user.info[userIndex].isSurvival)
                     {
