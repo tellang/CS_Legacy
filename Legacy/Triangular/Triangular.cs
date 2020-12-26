@@ -882,6 +882,7 @@ namespace Triangular
                             glcOpert -=1;
                             Console.SetCursorPosition(source.xPos + (source.term + source.outWidth)*3/2 - 12,
                             source.info[0].yPos - 2);
+                            Effect.DefaultColor();
                             Console.Write("Glance Oppertunity: {0}", glcOpert + 1);
                             if(glcOpert < 0)
                             {
@@ -1588,9 +1589,6 @@ namespace Triangular
             Console.SetWindowSize(95, 50);
             Console.Clear();
             GameManager gm = new GameManager();
-            //BaseFrame baseFrame = new BaseFrame(1, 1, 4, 5, 8);
-            //baseFrame.PrintFrame();
-            //baseFrame.PrintCleanFrame(1, 8);
             while(Cursor.cM != Cursor.CursorMode.Exit)
             {
                 gm.NewGame();
