@@ -1316,19 +1316,30 @@ namespace Triangular
             Effect.DefaultColor();
         }
 
-        public static FrontFrame Triumpher (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
+        private static FrontFrame Triumpher (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
             if (Superior(user, nthUser, opp, nthOpp) == user.info[nthUser].job)
             {
                 Effect.Blink(user, nthUser, 0, f:ConsoleColor.Green);
                 Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Red);
                 return ReturnTriumper(user, nthUser, opp, nthOpp);
+            } else if (Superior(user, nthUser, opp, nthOpp) == opp.info[nthUser].job)
+            {
+                Effect.Blink(user, nthUser, 0, f:ConsoleColor.Red);
+                Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Green);
+                return ReturnTriumper(opp, nthOpp, user, nthUser);
+            }
+            else 
+            {
+                Effect.Blink(user, nthUser, 0, f:ConsoleColor.Yellow);
+                Effect.Blink(opp, nthOpp, delay, f:ConsoleColor.Yellow);
+                return ReturnTriumper(opp, nthOpp, user, nthUser);
             }
         }
 
         public static FrontFrame Loser (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
         {
-            return TheOtherJob()
+            return TheOtherJob(Triumpher(user, nthUser, opp, nthOpp), user, opp);
         }
 
         public static string Superior (FrontFrame user, int nthUser, FrontFrame opp, int nthOpp)
