@@ -935,7 +935,9 @@ namespace Triangular
     {
         public static void SuperiorIcon(int xPos, int yPos)
         {
-
+            EffectFrame.Cursor(xPos + 3, yPos, "ⓣ");
+            EffectFrame.Cursor(xPos + 1, yPos + 1, "↙  ↖");
+            EffectFrame.Cursor(xPos, yPos + 2, "ⓦ → ⓢ");
         }
     }
 
@@ -1452,8 +1454,7 @@ namespace Triangular
     class GameManager:Job
     {
         private int xPos = 2, yPos = 4, width = 4, height = 5, term = 2, crossline = 8;
-        private string[] userJob = new string[] {devil, devil, devil}, 
-        oppJob = new string[] {warrior, thif, sorcerer},
+        private string[] userJob, oppJob,
         basicJob = new string[] {warrior, thif, sorcerer}, 
         additionalJob = new string[]{warrior, thif, sorcerer, devil},
         userLabel = new string[] {"3rd Slot", "2nd Slot", "1st Slot"},
@@ -1544,6 +1545,8 @@ namespace Triangular
         public void NewGame()
         {
             Console.Clear();
+            userJob = basicJob;
+            oppJob = additionalJob;
             BaseFrame baseFrame = new BaseFrame(xPos, yPos, width, height, term),
             oppBase = new BaseFrame(baseFrame[3] + crossline, baseFrame.yPos, baseFrame.inWidth, baseFrame.inHeight, baseFrame.term),
             menuBase = new BaseFrame(baseFrame[1], yPos + height*2, width, 1, term*2),
@@ -1564,6 +1567,7 @@ namespace Triangular
 
             Zeroize(user.source, opp.source);
 
+            UI.SuperiorIcon(opp.source.info[0].xPos - (term/2 + crossline) - 2, yPos + 2);
             for (int i = 0; i < 3; i++)
             {
                 oppBack.PrintFrame(i);
