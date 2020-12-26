@@ -106,38 +106,40 @@ namespace Triangular
         public string stat { get; set; }
         public int nextCardXPos { get; set; }
 
-        public int this[int nth] { get { return xPos + nextCardXPos * nth; } }
+        public int this[int nth] { get { return xPos + nextCardXPos * nth; } }      
+        protected const int xPosOffset = 2;
 
+        int frameXPosOffset = 1;
         public virtual void PrintFrame(int xPos, int yPos)
         {
             Console.SetCursorPosition(xPos, yPos);
-            Console.Write(" ┏ ");
+            Console.Write("┏ ");
             for (int i = 0; i < inWidth; i++)
-                Console.Write("━ ");
+                Console.Write("━━");
             Console.Write("┓ ");
 
             for (int j = 1; j <= inHeight; j++)
             {
-                Console.SetCursorPosition(xPos, yPos);
+                Console.SetCursorPosition(xPos, yPos + j);
                 Console.Write("┃ ");
                 for (int k = 1; k <= inWidth; k++)
-                    Console.Write(" ");
+                    Console.Write("  ");
 
                 Console.Write("┃ ");
             }
             Console.SetCursorPosition(xPos, yPos + inHeight + 1);
-            Console.Write("┗");
+            Console.Write("┗ ");
             for (int m = 1; m <= inWidth; m++)
-                Console.Write("━ ");
+                Console.Write("━━");
             Console.Write("┛ ");
         }
 
         public virtual void PrintCleanFrame(int xPos, int yPos)
         {
             Console.SetCursorPosition(xPos, yPos);
-            Console.Write(" ┏ ");
+            Console.Write("┏ ");
             for (int i = 0; i < inWidth; i++)
-                Console.Write("━ ");
+                Console.Write("━━");
             Console.Write("┓ ");
 
             for (int j = 1; j <= inHeight; j++)
@@ -148,9 +150,9 @@ namespace Triangular
                 Console.Write("┃ ");
             }
             Console.SetCursorPosition(xPos, yPos + inHeight + 1);
-            Console.Write("┗");
+            Console.Write("┗ ");
             for (int m = 1; m <= inWidth; m++)
-                Console.Write("━ ");
+                Console.Write("━━");
             Console.Write("┛ ");
         }
 
@@ -197,14 +199,14 @@ namespace Triangular
             base.PrintFrame(xPos, yPos);
             for (int i = 1; i <= inHeight; i++)
             {
-                Console.SetCursorPosition(xPos + 2, yPos + i);
+                Console.SetCursorPosition(xPos + xPosOffset, yPos + i);
                 for (int j = 1; j <= inWidth; j++)
                     Console.Write("▩");
             }
         }
     }
 
-    class FrontFrame : BackFrame, IIdentification
+    class FrontFrame : BaseFrame, IIdentification
     {
         public FrontFrame(int xPos, int yPos, int width, int height, int term) :
         base(xPos, yPos, width, height, term)
@@ -244,7 +246,7 @@ namespace Triangular
 
         public virtual void PrintFrameLabel(int nth)
         {
-            Console.SetCursorPosition(xPos + 2, yPos + nth + 1);
+            Console.SetCursorPosition(xPos + xPosOffset, yPos + nth + 1);
             Console.Write(info[nth].job);
         }
 
@@ -268,7 +270,7 @@ namespace Triangular
         {
             for (int i = 0; i < info.Length; i++)
             {
-                Console.SetCursorPosition(xPos + 2, yPos + i + 1);
+                Console.SetCursorPosition(xPos + xPosOffset, yPos + i + 1);
                 Console.Write(info[i].job);
             }
         }
@@ -285,7 +287,7 @@ namespace Triangular
             base.PrintFrame(0);
             for (int i = 0; i < info.Length; i++)
             {
-                Console.SetCursorPosition(xPos + 2, yPos + i + 1);
+                Console.SetCursorPosition(xPos + xPosOffset, yPos + i + 1);
                 Console.Write(info[i].job);
             }
         }
@@ -326,7 +328,7 @@ namespace Triangular
             foreColor = Console.ForegroundColor;
 
             Effect.SetColor(fore: ConsoleColor.Red, back: backColor);
-            Console.SetCursorPosition(xPos + 2, yPos + inHeight);
+            Console.SetCursorPosition(xPos + xPosOffset, yPos + inHeight);
             for (int i = 0; i < info[nth].lives; i++)
                 Console.Write("♡");
             Effect.SetColor(fore: foreColor, back: backColor);
@@ -370,12 +372,12 @@ namespace Triangular
             xCur = xPos - 2;
             yCur = yPos - 1;
             Console.SetCursorPosition(xCur, yCur);
-            Console.Write(" ┏ ");
-            Console.SetCursorPosition(xCur + outWidth + 2, yCur);
+            Console.Write("┏ ");
+            Console.SetCursorPosition(xCur + outWidth + xPosOffset, yCur);
             Console.Write("┓ ");
             Console.SetCursorPosition(xCur, yCur + outHeight + 1);
-            Console.Write("┗");
-            Console.SetCursorPosition(xCur + outWidth + 2, yCur + outHeight + 1);
+            Console.Write("┗ ");
+            Console.SetCursorPosition(xCur + outWidth + xPosOffset, yCur + outHeight + 1);
             Console.Write("┛ ");
             Effect.DefaultColor();
         }
@@ -397,11 +399,11 @@ namespace Triangular
             yCur = yPos - 1;
             Console.SetCursorPosition(xCur, yCur);
             Console.Write("  ");
-            Console.SetCursorPosition(xCur + outWidth + 2, yCur);
+            Console.SetCursorPosition(xCur + outWidth + xPosOffset, yCur);
             Console.Write("  ");
             Console.SetCursorPosition(xCur, yCur + outHeight + 1);
             Console.Write("  ");
-            Console.SetCursorPosition(xCur + outWidth + 2, yCur + outHeight + 1);
+            Console.SetCursorPosition(xCur + outWidth + xPosOffset, yCur + outHeight + 1);
             Console.Write("  ");
         }
     }
@@ -932,13 +934,13 @@ namespace Triangular
     class EffectFrame : BaseFrame
     {
         private string[] thifSkill = new string[24] {"構", "機", "顧", "饋", "朽", "鎭", "蘇", "築", 
-        "臟", "臝", "臙", "臘", "艪", "聳", "聱", "驌", "驂", "軌", "黑", "俗", "套", "休", "宦", "情"};
+        "臟", "揆", "死", "臘", "憎", "聳", "惡", "望", "切", "軌", "黑", "俗", "套", "休", "宦", "情"};
         private int[] term = new int [24] {20, 15, 10, 5, 1, 
         1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 
         1, 1, 1, 1};
-        private bool[, ] isUnUsed = new bool[5, 4];
+        private bool[, ] isUnUsed = new bool[5, 4]; // must be changed (It's card size)
 
         public EffectFrame (int xPos, int yPos, int width, int height, int term): base(xPos, yPos, width, height, term)
         {
@@ -952,16 +954,12 @@ namespace Triangular
 
         public void Impact (int xPos, int yPos, int delay)
         {
-            int rx, ry, i;
-            i=0;
+            int rx, ry, i=0;
             Random rand = new Random();
 
-            for(int y =0; y < 5; y++){ //5x4?
+            for(int y = 0; y < 5; y++) //5x4?
                 for (int x = 0; x < 4; x++)
-                {
                     isUnUsed[y, x] = true;
-                }
-            }
 
             while(i < 12)
             {
@@ -974,12 +972,12 @@ namespace Triangular
                     {
                         Cursor(xPos + 2 * (rx + ry), yPos, "★");
                         Thread.Sleep(delay);
-                        for (int k = 0; k <= ry; k++)
+                        for (int k = 0; k <= ry - 1; k++)
                         {
                             Cursor(xPos + 2 * (rx + ry - 1 - k), yPos + 1 + k, "★");
                             Cursor(xPos + 2 * (rx + ry - k), yPos + k, "☆");
                             Thread.Sleep(delay);
-                            Cursor(xPos + 2 * (rx + ry - k), yPos + i, "  ");
+                            Cursor(xPos + 2 * (rx + ry - k), yPos + k, "  ");
                         }
                     }
                     else
@@ -1000,9 +998,9 @@ namespace Triangular
                     Thread.Sleep(delay);
                     Cursor(xPos + rx * 2 - 1, yPos + ry, "(○)");
                     Thread.Sleep(delay*2);
-                    Cursor(xPos + (rx * - 1)*2, yPos + ry, "(_ _)");
+                    Cursor(xPos + (rx - 1)*2, yPos + ry, "(_  _)");
                     Thread.Sleep(delay*2);
-                    Cursor(xPos + (rx * - 1)*2, yPos + ry, "         ");
+                    Cursor(xPos + (rx - 1)*2, yPos + ry, "      ");
 
                     isUnUsed[ry - 1, rx - 1] = false;
                     i++;
@@ -1239,7 +1237,7 @@ namespace Triangular
 
                 if (Triumpher(user, userIndex, opp, opponentIndex) == user) //Triupmer
                 {
-                    if (user.info[userIndex].isSurvival)
+                    if (opp.info[userIndex].isSurvival)
                     {
                         opp.PrintFrame(opponentIndex);
                         user.PrintFrame(userIndex);
@@ -1295,7 +1293,7 @@ namespace Triangular
 
             if(GenerateRandomBool(percent))
             {
-                Effect.Blink(frame, nth, delay, " Critical!!! ", f: black, b: yellow);
+                Effect.Blink(frame, nth, delay, " Critical!! ", f: black, b: yellow);
                 frame.info[nth].lives -= 2;
                 for (int i = 0; i < 3; i++)
                 {
@@ -1378,7 +1376,7 @@ namespace Triangular
             EffectFrame superiorEffect = new EffectFrame(superior);
             EffectFrame inferiorEffect = new EffectFrame(inferior);
             BaseFrame superiorBase = new BaseFrame(superior);
-            BackFrame inferiorBase = new BackFrame(inferior);
+            BaseFrame inferiorBase = new BaseFrame(inferior);
 
             while(true)
             {
@@ -1455,7 +1453,7 @@ namespace Triangular
         additionalJob = new string[]{warrior, thif, sorcerer, devil},
         userLabel = new string[] {"3rd Slot", "2nd Slot", "1st Slot"},
         oppLabel = new string[] {"1st Slot", "2nd Slot", "3rd Slot"};
-        private bool[] isUnShuffled = new bool[] {true, true, true};
+        private bool[] isUnShuffled = new bool[] {true, true, true, true};
         public static bool IsGameOver (CardInfo cardInfo)
         {
             if(cardInfo.isSurvival)
@@ -1584,8 +1582,11 @@ namespace Triangular
         static void Main(string[] args)
         {
             Console.SetWindowSize(95, 50);
+            Console.Clear();
             GameManager gm = new GameManager();
-
+            //BaseFrame baseFrame = new BaseFrame(1, 1, 4, 5, 8);
+            //baseFrame.PrintFrame();
+            //baseFrame.PrintCleanFrame(1, 8);
             while(Cursor.cM != Cursor.CursorMode.Exit)
             {
                 gm.NewGame();
